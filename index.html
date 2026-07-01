@@ -4,86 +4,58 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Movimentações de Containers</title>
-
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f1f3f6;color:#111}
-body.boot .login,body.boot .app{display:none!important}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f1f3f6;color:#111}body.boot .login,body.boot .app{display:none!important}.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#111,#28384d)}.login-box{background:#fff;width:360px;max-width:92%;padding:28px;border-radius:14px;box-shadow:0 10px 30px #0005;text-align:center}.login-box h1{font-size:22px;margin:0 0 8px}.login-box p{margin:0 0 20px;color:#666}.login-box input{width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}.login-box button,.btn{border:none;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;background:#111;color:#fff}.login-box button{width:100%;margin-top:8px}.app{display:none}.top{background:#111;color:#fff;padding:18px 22px;position:relative;text-align:center}.top h1{font-size:26px;margin:0;font-weight:900;text-transform:uppercase;letter-spacing:.5px}.top .sair-top{position:absolute;right:18px;top:50%;transform:translateY(-50%)}.wrap{padding:18px;max-width:1400px;margin:auto}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}.card{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 8px #0001}.card b{font-size:24px}.card small{display:block;color:#666;margin-top:4px}.panel{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #0001}.panel h2{margin:0 0 14px;font-size:18px}.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.form input,.form select{padding:11px;border:1px solid #bbb;border-radius:8px;font-size:15px;text-transform:uppercase}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.green{background:#1d7f38}.btn.blue{background:#0b5ed7}.btn.red{background:#b42318}.btn.gray{background:#555}.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.filters input,.filters select{padding:10px;border:1px solid #bbb;border-radius:8px;font-size:15px}.chip{border:1px solid #111;background:#fff;color:#111;border-radius:999px;padding:9px 18px;font-weight:bold;cursor:pointer}.chip.active{background:#111;color:#fff}.table-area{overflow:auto;background:#fff;border-radius:12px;box-shadow:0 2px 8px #0001}.title-table{text-align:center;font-weight:900;font-size:22px;padding:10px;border:1px solid #000;border-bottom:none;background:#fff;text-transform:uppercase}table{width:100%;border-collapse:collapse;background:#fff;min-width:900px}th,td{border:1px solid #000;padding:7px;text-align:center;font-size:14px;height:34px}th{font-weight:900;background:#f7f7f7}td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}.edit{background:#ffc107}.del{background:#dc3545;color:#fff}.muted{color:#777;font-size:13px;margin-top:8px}.print-only{display:none}@media print{@page{size:A4 portrait;margin:8mm}body{background:#fff}.top,.panel,.cards,.actions-not-print,.no-print{display:none!important}.wrap{padding:0;max-width:none;width:100%}.table-area{box-shadow:none;border-radius:0;overflow:visible;width:100%;border:1px solid #000;background:#fff}.title-table{font-size:20px;padding:9px 6px;border:none;border-bottom:1px solid #000;text-align:center;font-weight:900;text-transform:uppercase;letter-spacing:.3px}table{width:100%;min-width:0;border-collapse:collapse}th,td{font-size:12.5px;padding:5px 4px;height:27px;border:1px solid #000;text-align:center}th{font-size:12px;font-weight:900}.no-print-col{display:none!important}.print-only{display:none!important}}
 
-.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#111,#28384d)}
-.login-box{background:#fff;width:360px;max-width:92%;padding:28px;border-radius:14px;box-shadow:0 10px 30px #0005;text-align:center}
-.login-box h1{font-size:22px;margin:0 0 8px}
-.login-box p{margin:0 0 20px;color:#666}
-.login-box input{width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
-.login-box button,.btn{border:none;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;background:#111;color:#fff}
-.login-box button{width:100%;margin-top:8px}
-
-.app{display:none}
-.top{background:#111;color:#fff;padding:18px 22px;position:relative;text-align:center}
-.top h1{font-size:26px;margin:0;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
-.top .sair-top{position:absolute;right:18px;top:50%;transform:translateY(-50%)}
-
-.wrap{padding:18px;max-width:1400px;margin:auto}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
-.card{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 8px #0001}
-.card b{font-size:24px}.card small{display:block;color:#666;margin-top:4px}
-
-.panel{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #0001}
-.panel h2{margin:0 0 14px;font-size:18px}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.form input,.form select{padding:11px;border:1px solid #bbb;border-radius:8px;font-size:15px;text-transform:uppercase}
-
-.actions,.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.actions{margin-top:12px}
-.btn.green{background:#1d7f38}
-.btn.blue{background:#0b5ed7}
-.btn.red{background:#b42318}
-.btn.gray{background:#555}
-
-.filters input,.filters select{padding:10px;border:1px solid #bbb;border-radius:8px;font-size:15px}
-.chip{border:1px solid #111;background:#fff;color:#111;border-radius:999px;padding:9px 18px;font-weight:bold;cursor:pointer}
-.chip.active{background:#111;color:#fff}
-
-.table-area{overflow:auto;background:#fff;border-radius:12px;box-shadow:0 2px 8px #0001}
-.title-table{text-align:center;font-weight:900;font-size:22px;padding:10px;border:1px solid #000;border-bottom:none;background:#fff;text-transform:uppercase}
-table{width:100%;border-collapse:collapse;background:#fff;min-width:900px}
-th,td{border:1px solid #000;padding:7px;text-align:center;font-size:14px;height:34px}
-th{font-weight:900;background:#f7f7f7}
-td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}
-.edit{background:#ffc107}
-.del{background:#dc3545;color:#fff}
-.muted{color:#777;font-size:13px;margin-top:8px}
-.print-only{display:none}
-
-.linha-sp{background:#ffd6d6}
-.local-itj{color:#0b5ed7;font-weight:bold}
-.local-sp{color:#c00000;font-weight:bold}
-
-#mes{background:#111;color:#fff;border:none;font-weight:bold;padding:12px 16px;border-radius:10px;cursor:pointer}
-
-.status{font-size:12px;font-weight:bold;padding:7px 12px;border-radius:999px;display:inline-block;background:#fff3cd;color:#8a5a00}
-.status.ok{background:#e9f7ef;color:#1d7f38}
-.status.off{background:#fff3cd;color:#8a5a00}
-.status.err{background:#ffd6d6;color:#b42318}
-
-@media print{
-  @page{size:A4 portrait;margin:8mm}
-  body{background:#fff}
-  .top,.panel,.cards,.actions-not-print,.no-print{display:none!important}
-  .wrap{padding:0;max-width:none;width:100%}
-  .table-area{box-shadow:none;border-radius:0;overflow:visible;width:100%;border:1px solid #000;background:#fff}
-  .title-table{font-size:20px;padding:9px 6px;border:none;border-bottom:1px solid #000;text-align:center;font-weight:900;text-transform:uppercase;letter-spacing:.3px}
-  table{width:100%;min-width:0;border-collapse:collapse}
-  th,td{font-size:12.5px;padding:5px 4px;height:27px;border:1px solid #000;text-align:center}
-  th{font-size:12px;font-weight:900}
-  .no-print-col{display:none!important}
-  .print-only{display:none!important}
-  .linha-sp{background:#fff!important}
-  .local-itj,.local-sp{color:#000!important}
+/* Linha SP */
+.linha-sp{
+    background:#ffd6d6;
 }
+
+/* Texto da coluna LOCAL */
+.local-itj{
+    color:#0b5ed7;
+    font-weight:bold;
+}
+
+.local-sp{
+    color:#c00000;
+    font-weight:bold;
+}
+
+/* Impressão */
+@media print{
+
+    .linha-sp{
+        background:#fff !important;
+    }
+
+    .local-itj,
+    .local-sp{
+        color:#000 !important;
+    }
+
+}
+
+#mes{
+  background:#111;
+  color:#fff;
+  border:none;
+  font-weight:bold;
+  padding:12px 16px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+
+/* Modo consulta */
+body.modo-consulta .admin-only{display:none!important}
+body.modo-consulta .no-print-col{display:none!important}
+.badge-modo{font-size:12px;font-weight:bold;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#1d4ed8;display:inline-block}
+.status{font-size:12px;font-weight:bold;padding:6px 10px;border-radius:999px;background:#e9f7ef;color:#1d7f38;display:inline-block}
+
 </style>
 </head>
-
 <body class="boot">
 
 <div class="login" id="loginScreen">
@@ -112,36 +84,33 @@ td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}
       <div class="card"><b id="totalSaida">0</b><small>Saídas</small></div>
     </div>
 
-    <div class="panel no-print">
+    <div class="panel no-print admin-only" id="cadastroPanel">
       <h2>Cadastrar movimentação</h2>
       <div class="form">
         <input type="date" id="data">
-        <input type="text" id="hora" placeholder="Ex: 08:15" maxlength="5">
+        <input
+    type="text"
+    id="hora"
+    placeholder="Ex: 08:15"
+    maxlength="5">
         <input id="container" placeholder="Container">
-        <select id="atividade">
-          <option>AJUSTE</option>
-          <option>BAIXA</option>
-          <option>SAÍDA</option>
-        </select>
-        <select id="operador">
-          <option value="IVAIR">IVAIR</option>
-          <option value="EDIMILSON">EDIMILSON</option>
-        </select>
+        <select id="atividade"><option>AJUSTE</option><option>BAIXA</option><option>SAÍDA</option></select>
+       <select id="operador">
+    <option value="IVAIR">IVAIR</option>
+    <option value="EDIMILSON">EDIMILSON</option>
+</select>
         <input id="solicitante" placeholder="Solicitante">
-        <select id="local">
-          <option>ITJ</option>
-          <option>SP</option>
-        </select>
+        <select id="local"><option>ITJ</option><option>SP</option></select>
       </div>
       <div class="actions">
         <button class="btn green" onclick="salvar()" id="btnSalvar">SALVAR MOVIMENTAÇÃO</button>
         <button class="btn gray" onclick="limparForm()">LIMPAR</button>
       </div>
-      <div class="muted">Cliente será salvo automaticamente como CAMESA. O sistema salva primeiro no backup local e depois no Firebase.</div>
+      <div class="muted">Cliente será salvo automaticamente como CAMESA.</div>
     </div>
 
     <div class="panel no-print">
-      <h2>Filtros e busca</h2>
+      <h2>Filtros e busca <span class="badge-modo" id="badgeModo">Modo</span></h2>
       <div class="filters">
         <select id="mes" onchange="aoMudarMes()"></select>
         <button class="chip active" id="fTodos" onclick="setFiltro('TODOS')">TODOS</button>
@@ -149,10 +118,11 @@ td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}
         <button class="chip" id="fSP" onclick="setFiltro('SP')">SP</button>
         <input id="busca" placeholder="Pesquisar container" oninput="render()">
         <button class="btn blue" onclick="imprimirRelatorio()">IMPRIMIR RELATÓRIO</button>
-        <button class="btn green" onclick="exportCSV()">EXPORTAR EXCEL/CSV</button>
-        <button class="btn blue" onclick="sincronizarBackupLocal()">SINCRONIZAR BACKUP</button>
-        <button class="btn red" onclick="excluirMovimentacoesDoMes()">EXCLUIR MOVIMENTAÇÕES DO MÊS</button>
-        <span class="status off" id="statusFirebase">Backup local ativo</span>
+        <button class="btn green admin-only" onclick="exportCSV()">EXPORTAR EXCEL/CSV</button>
+<button class="btn blue admin-only" onclick="enviarLocalParaFirebase()">
+  ENVIAR DADOS LOCAIS PARA FIREBASE
+</button>
+        <button class="btn red admin-only" onclick="excluirMovimentacoesDoMes()">EXCLUIR MOVIMENTAÇÕES DO MÊS</button>
       </div>
       <div class="muted">A busca mostra o container pesquisado e todas as movimentações dele no mês selecionado.</div>
     </div>
@@ -163,15 +133,7 @@ td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}
       <table>
         <thead>
           <tr>
-            <th>DATA</th>
-            <th>HORÁRIO</th>
-            <th>CONTAINERS</th>
-            <th>ATIVIDADE</th>
-            <th>OPERADOR</th>
-            <th>CLIENTE</th>
-            <th>SOLICITANTE</th>
-            <th>LOCAL</th>
-            <th class="no-print-col">AÇÕES</th>
+            <th>DATA</th><th>HORÁRIO</th><th>CONTAINERS</th><th>ATIVIDADE</th><th>OPERADOR</th><th>CLIENTE</th><th>SOLICITANTE</th><th>LOCAL</th><th class="no-print-col">AÇÕES</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -182,7 +144,6 @@ td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyD6HSp4F8acXW6GBRwVnXxo-4-_c1JyLZw",
@@ -196,34 +157,33 @@ const firebaseConfig = {
 
 let db = null;
 let firebaseAtivo = false;
-
 try{
   firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
   firebaseAtivo = true;
 }catch(e){
-  console.log("Firebase não conectado:", e);
+  console.log('Firebase não conectado:', e);
 }
 
-const SENHA = "161004";
-const KEY_DADOS = "movContainersCamesa";
-const KEY_DELETADOS = "movContainersCamesaDeleted";
-const KEY_MES = "mesSelecionadoMov";
+const SENHA_ADMIN = '161004';
+const SENHA_CONSULTA = '123';
+const KEY_DADOS = 'movContainersCamesa';
+const KEY_DELETADOS = 'movContainersCamesaDeleted';
+const KEY_MODO = 'modoUsuarioMov';
 
 let dados = carregarLocal();
-let idsDeletados = new Set(JSON.parse(localStorage.getItem(KEY_DELETADOS) || "[]"));
-let filtroLocal = "TODOS";
+let idsDeletados = new Set(JSON.parse(localStorage.getItem(KEY_DELETADOS) || '[]'));
+let filtroLocal = 'TODOS';
 let editId = null;
 let unsubscribeMov = null;
 let tempoInatividade = null;
-let sincronizando = false;
-
+let modoUsuario = localStorage.getItem(KEY_MODO) || '';
 const TEMPO_MAXIMO = 3 * 60 * 1000;
-const mesesNome = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+const mesesNome = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
 
 function carregarLocal(){
   try{
-    return JSON.parse(localStorage.getItem(KEY_DADOS) || "[]").filter(x => !x._deleted);
+    return JSON.parse(localStorage.getItem(KEY_DADOS) || '[]').filter(x => !x._deleted);
   }catch(e){
     return [];
   }
@@ -234,73 +194,88 @@ function salvarLocal(){
   localStorage.setItem(KEY_DELETADOS, JSON.stringify([...idsDeletados]));
 }
 
-function setStatus(txt, tipo="off"){
-  const el = document.getElementById("statusFirebase");
+function setStatus(txt, ok=true){
+  const el = document.getElementById('statusFirebase');
   if(!el) return;
-
   el.textContent = txt;
-  el.className = "status " + tipo;
+  el.style.background = ok ? '#e9f7ef' : '#fff3cd';
+  el.style.color = ok ? '#1d7f38' : '#8a5a00';
 }
 
-function hojeISO(){
-  return new Date().toISOString().slice(0,10);
-}
+function aplicarModo(){
+  modoUsuario = localStorage.getItem(KEY_MODO) || '';
+  document.body.classList.toggle('modo-consulta', modoUsuario === 'consulta');
 
-function horaAtual(){
-  return new Date().toTimeString().slice(0,5);
-}
-
-function login(){
-  const pass = document.getElementById("pass").value;
-
-  if(pass === SENHA){
-    localStorage.setItem("logadoMov","sim");
-    document.getElementById("loginErro").style.display = "none";
-    abrirApp();
-  }else{
-    document.getElementById("loginErro").style.display = "block";
+  const badge = document.getElementById('badgeModo');
+  if(badge){
+    if(modoUsuario === 'admin'){
+      badge.textContent = 'ADM';
+      badge.style.background = '#dcfce7';
+      badge.style.color = '#166534';
+    }else{
+      badge.textContent = 'CONSULTA';
+      badge.style.background = '#dbeafe';
+      badge.style.color = '#1d4ed8';
+    }
   }
 }
 
+function login(){
+  const pass = document.getElementById('pass').value;
+
+  if(pass === SENHA_ADMIN){
+    localStorage.setItem('logadoMov','sim');
+    localStorage.setItem(KEY_MODO,'admin');
+    document.getElementById('loginErro').style.display='none';
+    abrirApp();
+    return;
+  }
+
+  if(pass === SENHA_CONSULTA){
+    localStorage.setItem('logadoMov','sim');
+    localStorage.setItem(KEY_MODO,'consulta');
+    document.getElementById('loginErro').style.display='none';
+    abrirApp();
+    return;
+  }
+
+  document.getElementById('loginErro').style.display='block';
+}
+
 function sair(){
-  localStorage.removeItem("logadoMov");
+  localStorage.removeItem('logadoMov');
+  localStorage.removeItem(KEY_MODO);
   location.reload();
 }
 
 function abrirApp(){
-  document.body.classList.remove("boot");
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("app").style.display = "block";
+  document.body.classList.remove('boot');
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  aplicarModo();
   init();
   resetarInatividade();
 }
 
 function mostrarLogin(){
-  document.body.classList.remove("boot");
-  document.getElementById("app").style.display = "none";
-  document.getElementById("loginScreen").style.display = "flex";
-
-  setTimeout(() => {
-    const pass = document.getElementById("pass");
-    if(pass) pass.focus();
-  }, 50);
+  document.body.classList.remove('boot');
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('pass').value = '';
+  document.getElementById('pass').focus();
 }
 
-document.addEventListener("keydown", e => {
-  if(e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none"){
-    login();
-  }
+document.addEventListener('keydown', e=>{
+  if(e.key==='Enter' && document.getElementById('loginScreen').style.display!=='none') login();
 });
 
 function init(){
-  document.getElementById("data").value = hojeISO();
-  document.getElementById("hora").value = horaAtual();
-
-  const op = localStorage.getItem("ultimoOperador");
-  document.getElementById("operador").value = (op === "EDIMILSON" || op === "IVAIR") ? op : "IVAIR";
-
-  document.getElementById("solicitante").value = localStorage.getItem("ultimoSolicitante") || "ANDERSON";
-
+  const hoje = new Date();
+  document.getElementById('data').value = hoje.toISOString().slice(0,10);
+  document.getElementById('hora').value = hoje.toTimeString().slice(0,5);
+  const op = localStorage.getItem('ultimoOperador');
+  document.getElementById('operador').value = (op === 'EDIMILSON' || op === 'IVAIR') ? op : 'IVAIR';
+  document.getElementById('solicitante').value = localStorage.getItem('ultimoSolicitante') || 'ANDERSON';
   montarMeses();
   carregarDados();
 }
@@ -309,125 +284,107 @@ function carregarDados(){
   dados = carregarLocal();
   render();
 
-  if(!firebaseAtivo || !db){
-    setStatus("Backup local ativo", "off");
+  if(!firebaseAtivo){
+    setStatus('Firebase: backup local', false);
     return;
   }
 
   if(unsubscribeMov) unsubscribeMov();
+  setStatus('Firebase: conectando...', false);
 
-  setStatus("Conectando...", "off");
+  unsubscribeMov = db.collection('movimentacoes_camesa').orderBy('data').onSnapshot(snapshot=>{
+    const firebaseDados = [];
 
-  unsubscribeMov = db
-    .collection("movimentacoes_camesa")
-    .orderBy("data")
-    .onSnapshot(snapshot => {
-      const firebaseDados = [];
-
-      snapshot.docs.forEach(doc => {
-        const item = { id: doc.id, ...doc.data() };
-
-        if(item._deleted){
-          idsDeletados.add(String(item.id || doc.id));
-        }else{
-          firebaseDados.push(item);
-        }
-      });
-
-      dados = dados.filter(item => !idsDeletados.has(String(item.id)));
-
-      const mapa = {};
-
-      dados.forEach(item => {
-        if(item && item.id && !idsDeletados.has(String(item.id))){
-          mapa[String(item.id)] = item;
-        }
-      });
-
-      firebaseDados.forEach(item => {
-        if(item && item.id && !idsDeletados.has(String(item.id))){
-          mapa[String(item.id)] = item;
-        }
-      });
-
-      dados = Object.values(mapa);
-      salvarLocal();
-      render();
-
-      setStatus("Online", "ok");
-
-    }, err => {
-      console.error(err);
-      setStatus("Firebase indisponível", "err");
-      alert("Firebase indisponível. O sistema continuará usando o backup local.");
+    snapshot.docs.forEach(doc=>{
+      const item = {id: doc.id, ...doc.data()};
+      if(item._deleted){
+        idsDeletados.add(String(item.id));
+      }else{
+        firebaseDados.push(item);
+      }
     });
+
+    dados = dados.filter(item => !idsDeletados.has(String(item.id)));
+
+    const mapa = {};
+    dados.forEach(item=>{
+      if(!idsDeletados.has(String(item.id))) mapa[String(item.id)] = item;
+    });
+    firebaseDados.forEach(item=>{
+      if(!idsDeletados.has(String(item.id))) mapa[String(item.id)] = item;
+    });
+
+    dados = Object.values(mapa);
+    salvarLocal();
+    render();
+    setStatus('Firebase: online', true);
+
+    if(modoUsuario === 'admin') sincronizarBackupLocal(false);
+  }, err=>{
+    console.error(err);
+    setStatus('Firebase: erro/backup local', false);
+  });
 }
 
 function montarMeses(){
-  const sel = document.getElementById("mes");
-  sel.innerHTML = "";
+  const sel = document.getElementById('mes');
+  sel.innerHTML = '';
 
   const anoAtual = new Date().getFullYear();
   const mesAtual = new Date().getMonth() + 1;
 
-  for(let m = 1; m <= 12; m++){
-    const v = `${anoAtual}-${String(m).padStart(2,"0")}`;
-
-    const op = document.createElement("option");
+  for(let m=1; m<=12; m++){
+    const v = `${anoAtual}-${String(m).padStart(2,'0')}`;
+    const op = document.createElement('option');
     op.value = v;
     op.textContent = `${mesesNome[m-1]} / ${anoAtual}`;
-
     sel.appendChild(op);
   }
 
-  const salvo = localStorage.getItem(KEY_MES);
-
-  sel.value = salvo && salvo.startsWith(String(anoAtual))
-    ? salvo
-    : `${anoAtual}-${String(mesAtual).padStart(2,"0")}`;
+  const salvo = localStorage.getItem('mesSelecionadoMov');
+  sel.value = salvo && salvo.startsWith(String(anoAtual)) ? salvo : `${anoAtual}-${String(mesAtual).padStart(2,'0')}`;
 }
 
 function aoMudarMes(){
-  localStorage.setItem(KEY_MES, document.getElementById("mes").value);
+  localStorage.setItem('mesSelecionadoMov', document.getElementById('mes').value);
   render();
 }
 
 function setFiltro(f){
   filtroLocal = f;
-
-  ["TODOS","ITJ","SP"].forEach(x => {
-    const botao = document.getElementById("f" + x);
-
-    if(botao){
-      botao.classList.toggle("active", x === f);
-    }
+  ['TODOS','ITJ','SP'].forEach(x=>{
+    const botao = document.getElementById('f'+x);
+    if(botao) botao.classList.toggle('active', x===f);
   });
-
   render();
 }
 
 async function salvar(){
+  if(modoUsuario !== 'admin'){
+    alert('Este acesso é somente para consulta.');
+    return;
+  }
+
   const obj = {
     id: editId || String(Date.now()),
-    data: document.getElementById("data").value,
-    hora: document.getElementById("hora").value,
-    container: document.getElementById("container").value.trim().toUpperCase(),
-    atividade: document.getElementById("atividade").value,
-    operador: document.getElementById("operador").value.trim().toUpperCase(),
-    cliente: "CAMESA",
-    solicitante: document.getElementById("solicitante").value.trim().toUpperCase(),
-    local: document.getElementById("local").value,
+    data: document.getElementById('data').value,
+    hora: document.getElementById('hora').value,
+    container: document.getElementById('container').value.trim().toUpperCase(),
+    atividade: document.getElementById('atividade').value,
+    operador: document.getElementById('operador').value.trim().toUpperCase(),
+    cliente: 'CAMESA',
+    solicitante: document.getElementById('solicitante').value.trim().toUpperCase(),
+    local: document.getElementById('local').value,
     _deleted: false
   };
 
   if(!obj.data || !obj.hora || !obj.container || !obj.operador || !obj.solicitante){
-    alert("Preencha data, horário, container, operador e solicitante.");
+    alert('Preencha data, horário, container, operador e solicitante.');
     return;
   }
 
-  localStorage.setItem("ultimoOperador", obj.operador);
-  localStorage.setItem("ultimoSolicitante", obj.solicitante);
-
+  localStorage.setItem('ultimoOperador', obj.operador);
+  localStorage.setItem('ultimoSolicitante', obj.solicitante);
   idsDeletados.delete(String(obj.id));
 
   if(editId){
@@ -439,106 +396,96 @@ async function salvar(){
   salvarLocal();
   render();
 
-  const idSalvo = String(obj.id);
-
-  editId = null;
-  document.getElementById("btnSalvar").textContent = "SALVAR MOVIMENTAÇÃO";
-  limparForm(false);
-
   try{
-    if(firebaseAtivo && db){
-      await db.collection("movimentacoes_camesa").doc(idSalvo).set(obj, { merge:true });
-      setStatus("Online", "ok");
+    if(firebaseAtivo){
+      await db.collection('movimentacoes_camesa').doc(String(obj.id)).set(obj, {merge:true});
+      setStatus('Firebase: online', true);
     }else{
-      setStatus("Backup local salvo", "off");
+      setStatus('Firebase: backup salvo', false);
     }
   }catch(e){
     console.error(e);
-    setStatus("Erro Firebase / Backup salvo", "err");
-    alert("Firebase falhou, mas a movimentação ficou salva no backup local. Clique em SINCRONIZAR BACKUP quando a internet voltar.");
+    setStatus('Firebase: erro/backup salvo', false);
+    alert('Firebase falhou, mas a movimentação ficou salva no backup local.');
   }
+
+  editId = null;
+  document.getElementById('btnSalvar').textContent = 'SALVAR MOVIMENTAÇÃO';
+  limparForm(false);
 }
 
 function limparForm(clear=true){
   editId = null;
-  document.getElementById("btnSalvar").textContent = "SALVAR MOVIMENTAÇÃO";
-  document.getElementById("container").value = "";
+  document.getElementById('btnSalvar').textContent = 'SALVAR MOVIMENTAÇÃO';
+  document.getElementById('container').value = '';
 
   if(clear){
-    document.getElementById("operador").value = "IVAIR";
-    document.getElementById("solicitante").value = "ANDERSON";
-    document.getElementById("atividade").value = "AJUSTE";
-    document.getElementById("local").value = "ITJ";
-    document.getElementById("data").value = hojeISO();
-    document.getElementById("hora").value = horaAtual();
+    document.getElementById('operador').value = 'IVAIR';
+    document.getElementById('solicitante').value = 'ANDERSON';
   }
 
-  document.getElementById("container").focus();
+  document.getElementById('container').focus();
 }
 
 function mesDoItem(d){
-  return d && d.data ? d.data.slice(0,7) : "";
+  return d.data ? d.data.slice(0,7) : '';
 }
 
 function filtrar(){
-  const mes = document.getElementById("mes").value;
-  const busca = document.getElementById("busca").value.trim().toUpperCase();
+  const mes = document.getElementById('mes').value;
+  const busca = document.getElementById('busca').value.trim().toUpperCase();
 
   return dados
-    .filter(d => d && !d._deleted)
+    .filter(d => !d._deleted)
     .filter(d => mesDoItem(d) === mes)
-    .filter(d => filtroLocal === "TODOS" || d.local === filtroLocal)
-    .filter(d => !busca || String(d.container || "").includes(busca))
-    .sort((a,b) => String(a.data + a.hora).localeCompare(String(b.data + b.hora)));
+    .filter(d => filtroLocal === 'TODOS' || d.local === filtroLocal)
+    .filter(d => !busca || d.container.includes(busca))
+    .sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
 }
 
 function render(){
-  const mesEl = document.getElementById("mes");
-  if(!mesEl || !mesEl.value) return;
+  const mes = document.getElementById('mes')?.value;
+  if(!mes) return;
 
-  const mes = mesEl.value;
+  document.getElementById('tituloTabela').textContent = 'CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS';
+  document.getElementById('subPrint').textContent = '';
 
-  document.getElementById("tituloTabela").textContent = "CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS";
-  document.getElementById("subPrint").textContent = "";
-
-  const mesDados = dados.filter(d => d && !d._deleted && mesDoItem(d) === mes);
-
-  document.getElementById("totalMes").textContent = mesDados.length;
-  document.getElementById("totalItj").textContent = mesDados.filter(d => d.local === "ITJ").length;
-  document.getElementById("totalSp").textContent = mesDados.filter(d => d.local === "SP").length;
-  document.getElementById("totalBaixa").textContent = mesDados.filter(d => d.atividade === "BAIXA").length;
-  document.getElementById("totalAjuste").textContent = mesDados.filter(d => d.atividade === "AJUSTE").length;
-  document.getElementById("totalSaida").textContent = mesDados.filter(d => d.atividade === "SAÍDA").length;
+  const mesDados = dados.filter(d => !d._deleted && mesDoItem(d) === mes);
+  document.getElementById('totalMes').textContent = mesDados.length;
+  document.getElementById('totalItj').textContent = mesDados.filter(d=>d.local==='ITJ').length;
+  document.getElementById('totalSp').textContent = mesDados.filter(d=>d.local==='SP').length;
+  document.getElementById('totalBaixa').textContent = mesDados.filter(d=>d.atividade==='BAIXA').length;
+  document.getElementById('totalAjuste').textContent = mesDados.filter(d=>d.atividade==='AJUSTE').length;
+  document.getElementById('totalSaida').textContent = mesDados.filter(d=>d.atividade==='SAÍDA').length;
 
   const lista = filtrar();
-  const tbody = document.getElementById("tbody");
-  tbody.innerHTML = "";
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
 
   lista.forEach(d => tbody.appendChild(linha(d)));
 
-  const linhasVazias = Math.max(20 - lista.length, 0);
-
-  for(let i=0; i<linhasVazias; i++){
-    const tr = document.createElement("tr");
+  const linhasVazias = Math.max(20-lista.length, 0);
+  for(let i=0;i<linhasVazias;i++){
+    const tr = document.createElement('tr');
     tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td>CAMESA</td><td></td><td></td><td class="no-print-col"></td>';
     tbody.appendChild(tr);
   }
 }
 
 function formataData(dt){
-  if(!dt) return "";
-  const [a,m,d] = dt.split("-");
+  if(!dt) return '';
+  const [a,m,d] = dt.split('-');
   return `${d}/${m}/${String(a).slice(2)}`;
 }
 
 function linha(d){
-  const tr = document.createElement("tr");
+  const tr = document.createElement('tr');
+  if(d.local === 'SP') tr.classList.add('linha-sp');
 
-  if(d.local === "SP"){
-    tr.classList.add("linha-sp");
-  }
-
-  const classeLocal = d.local === "SP" ? "local-sp" : "local-itj";
+  const classeLocal = d.local === 'SP' ? 'local-sp' : 'local-itj';
+  const acoes = modoUsuario === 'admin'
+    ? `<td class="no-print-col"><button class="edit" onclick="editar('${d.id}')">Editar</button> <button class="del" onclick="excluir('${d.id}')">Excluir</button></td>`
+    : `<td class="no-print-col"></td>`;
 
   tr.innerHTML = `
     <td>${formataData(d.data)}</td>
@@ -549,91 +496,91 @@ function linha(d){
     <td>${d.cliente}</td>
     <td>${d.solicitante}</td>
     <td class="${classeLocal}">${d.local}</td>
-    <td class="no-print-col">
-      <button class="edit" onclick="editar('${d.id}')">Editar</button>
-      <button class="del" onclick="excluir('${d.id}')">Excluir</button>
-    </td>
+    ${acoes}
   `;
-
   return tr;
 }
 
 function editar(id){
-  const d = dados.find(x => String(x.id) === String(id));
+  if(modoUsuario !== 'admin'){
+    alert('Este acesso é somente para consulta.');
+    return;
+  }
 
+  const d = dados.find(x => String(x.id) === String(id));
   if(!d) return;
 
   editId = id;
+  ['data','hora','container','atividade','operador','solicitante','local'].forEach(k=>{
+    document.getElementById(k).value = d[k];
+  });
 
-  document.getElementById("data").value = d.data || hojeISO();
-  document.getElementById("hora").value = d.hora || horaAtual();
-  document.getElementById("container").value = d.container || "";
-  document.getElementById("atividade").value = d.atividade || "AJUSTE";
-  document.getElementById("operador").value = (d.operador === "EDIMILSON" || d.operador === "IVAIR") ? d.operador : "IVAIR";
-  document.getElementById("solicitante").value = d.solicitante || "ANDERSON";
-  document.getElementById("local").value = d.local || "ITJ";
-
-  document.getElementById("btnSalvar").textContent = "SALVAR ALTERAÇÃO";
-
-  scrollTo({ top:0, behavior:"smooth" });
+  document.getElementById('btnSalvar').textContent = 'SALVAR ALTERAÇÃO';
+  scrollTo({top:0, behavior:'smooth'});
 }
 
 async function excluir(id){
-  if(!confirm("Excluir esta movimentação?")) return;
+  if(modoUsuario !== 'admin'){
+    alert('Este acesso é somente para consulta.');
+    return;
+  }
 
+  if(!confirm('Excluir esta movimentação?')) return;
+
+  const backup = [...dados];
   idsDeletados.add(String(id));
   dados = dados.filter(d => String(d.id) !== String(id));
   salvarLocal();
   render();
 
   try{
-    if(firebaseAtivo && db){
-      await db.collection("movimentacoes_camesa").doc(String(id)).set({
+    if(firebaseAtivo){
+      await db.collection('movimentacoes_camesa').doc(String(id)).set({
         id: String(id),
         _deleted: true,
         deletedAt: new Date().toISOString()
-      }, { merge:true });
-
-      setStatus("Online", "ok");
+      }, {merge:true});
     }
   }catch(e){
     console.error(e);
-    setStatus("Excluído no backup local", "off");
-    alert("Excluiu do backup local. Quando a conexão voltar, clique em SINCRONIZAR BACKUP para remover no Firebase também.");
+    dados = backup;
+    idsDeletados.delete(String(id));
+    salvarLocal();
+    render();
+    alert('Erro ao excluir no Firebase. A movimentação voltou para a tabela.');
   }
 }
 
 async function excluirMovimentacoesDoMes(){
-  const mesSelecionado = document.getElementById("mes").value;
-  const registrosMes = dados.filter(d => d && !d._deleted && mesDoItem(d) === mesSelecionado);
+  if(modoUsuario !== 'admin'){
+    alert('Este acesso é somente para consulta.');
+    return;
+  }
+
+  const mesSelecionado = document.getElementById('mes').value;
+  const registrosMes = dados.filter(d => !d._deleted && mesDoItem(d) === mesSelecionado);
 
   if(!registrosMes.length){
-    alert("Não existem movimentações neste mês.");
+    alert('Não existem movimentações neste mês.');
     return;
   }
 
-  if(!confirm(`Excluir ${registrosMes.length} movimentações do mês selecionado?`)){
-    return;
-  }
+  if(!confirm(`Excluir ${registrosMes.length} movimentações do mês selecionado?`)) return;
 
+  const backup = [...dados];
   registrosMes.forEach(r => idsDeletados.add(String(r.id)));
   dados = dados.filter(d => mesDoItem(d) !== mesSelecionado);
   salvarLocal();
   render();
 
   try{
-    if(firebaseAtivo && db){
+    if(firebaseAtivo){
       let batch = db.batch();
       let count = 0;
 
       for(const r of registrosMes){
-        const ref = db.collection("movimentacoes_camesa").doc(String(r.id));
-        batch.set(ref, {
-          id: String(r.id),
-          _deleted: true,
-          deletedAt: new Date().toISOString()
-        }, { merge:true });
-
+        const ref = db.collection('movimentacoes_camesa').doc(String(r.id));
+        batch.set(ref, {id:String(r.id), _deleted:true, deletedAt:new Date().toISOString()}, {merge:true});
         count++;
 
         if(count >= 450){
@@ -643,73 +590,73 @@ async function excluirMovimentacoesDoMes(){
         }
       }
 
-      if(count > 0){
-        await batch.commit();
-      }
-
-      setStatus("Online", "ok");
+      if(count > 0) await batch.commit();
     }
 
-    alert("Movimentações excluídas com sucesso.");
-
+    alert('Movimentações excluídas com sucesso.');
   }catch(e){
     console.error(e);
-    setStatus("Exclusão local salva", "off");
-    alert("As movimentações saíram da tela e ficaram marcadas para exclusão no backup local. Clique em SINCRONIZAR BACKUP quando a conexão voltar.");
+    dados = backup;
+    registrosMes.forEach(r => idsDeletados.delete(String(r.id)));
+    salvarLocal();
+    render();
+    alert('Erro ao excluir movimentações. Elas voltaram para a tabela.');
   }
 }
 
 function exportCSV(){
   const lista = filtrar();
-
   if(!lista.length){
-    alert("Nada para exportar.");
+    alert('Nada para exportar.');
     return;
   }
 
-  const cab = ["DATA","HORARIO","CONTAINER","ATIVIDADE","OPERADOR","CLIENTE","SOLICITANTE","LOCAL"];
-  const linhas = lista.map(d => [formataData(d.data), d.hora, d.container, d.atividade, d.operador, d.cliente, d.solicitante, d.local]);
-  const csv = [cab, ...linhas].map(r => r.join(";")).join("\n");
-  const blob = new Blob(["\ufeff" + csv], { type:"text/csv;charset=utf-8;" });
-  const a = document.createElement("a");
-
+  const cab = ['DATA','HORARIO','CONTAINER','ATIVIDADE','OPERADOR','CLIENTE','SOLICITANTE','LOCAL'];
+  const linhas = lista.map(d=>[formataData(d.data),d.hora,d.container,d.atividade,d.operador,d.cliente,d.solicitante,d.local]);
+  const csv = [cab,...linhas].map(r=>r.join(';')).join('\n');
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = "movimentacoes_containers.csv";
+  a.download = 'movimentacoes_containers.csv';
   a.click();
 }
 
 function imprimirRelatorio(){
   resetarInatividade();
   render();
-  setTimeout(() => window.print(), 100);
+  setTimeout(()=>window.print(), 100);
 }
 
-window.addEventListener("afterprint", () => {
+window.addEventListener('afterprint', ()=>{
   render();
   resetarInatividade();
 });
 
 async function sincronizarBackupLocal(mostrarMensagem=true){
-  if(!firebaseAtivo || !db){
-    if(mostrarMensagem) alert("Firebase não está conectado.");
-    setStatus("Backup local ativo", "off");
+  if(modoUsuario !== 'admin'){
+    if(mostrarMensagem) alert('Este acesso é somente para consulta.');
     return;
   }
 
-  if(sincronizando) return;
+  if(!firebaseAtivo || !db){
+    if(mostrarMensagem) alert('Firebase não está conectado.');
+    return;
+  }
 
-  sincronizando = true;
-  setStatus("Sincronizando...", "off");
+  const locais = carregarLocal().filter(item => !idsDeletados.has(String(item.id)));
+
+  if(!locais.length){
+    if(mostrarMensagem) alert('Não existem movimentações locais para sincronizar.');
+    return;
+  }
 
   try{
-    const locais = carregarLocal().filter(item => item && item.id && !idsDeletados.has(String(item.id)));
-
     let batch = db.batch();
     let count = 0;
 
     for(const item of locais){
-      const ref = db.collection("movimentacoes_camesa").doc(String(item.id));
-      batch.set(ref, { ...item, _deleted:false }, { merge:true });
+      const ref = db.collection('movimentacoes_camesa').doc(String(item.id));
+      batch.set(ref, {...item, _deleted:false}, {merge:true});
       count++;
 
       if(count >= 450){
@@ -719,73 +666,41 @@ async function sincronizarBackupLocal(mostrarMensagem=true){
       }
     }
 
-    for(const id of idsDeletados){
-      const ref = db.collection("movimentacoes_camesa").doc(String(id));
-      batch.set(ref, {
-        id: String(id),
-        _deleted: true,
-        deletedAt: new Date().toISOString()
-      }, { merge:true });
+    if(count > 0) await batch.commit();
 
-      count++;
-
-      if(count >= 450){
-        await batch.commit();
-        batch = db.batch();
-        count = 0;
-      }
-    }
-
-    if(count > 0){
-      await batch.commit();
-    }
-
-    setStatus("Online", "ok");
-
-    if(mostrarMensagem){
-      alert("Backup sincronizado com sucesso.");
-    }
-
+    setStatus('Firebase: backup sincronizado', true);
+    if(mostrarMensagem) alert('Backup local sincronizado com sucesso.');
   }catch(e){
     console.error(e);
-    setStatus("Erro ao sincronizar", "err");
-
-    if(mostrarMensagem){
-      alert("Erro ao sincronizar backup local.");
-    }
-  }finally{
-    sincronizando = false;
+    setStatus('Firebase: erro ao sincronizar', false);
+    if(mostrarMensagem) alert('Erro ao sincronizar backup local.');
   }
 }
 
 function resetarInatividade(){
   clearTimeout(tempoInatividade);
+  if(localStorage.getItem('logadoMov') !== 'sim') return;
 
-  if(localStorage.getItem("logadoMov") !== "sim") return;
-
-  tempoInatividade = setTimeout(() => {
-    localStorage.removeItem("logadoMov");
-    document.getElementById("pass").value = "";
-    document.getElementById("loginErro").style.display = "none";
+  tempoInatividade = setTimeout(()=>{
+    localStorage.removeItem('logadoMov');
+    localStorage.removeItem(KEY_MODO);
+    document.getElementById('pass').value = '';
+    document.getElementById('loginErro').style.display = 'none';
     mostrarLogin();
   }, TEMPO_MAXIMO);
 }
 
-["mousemove","mousedown","click","scroll","keypress","keydown","touchstart"].forEach(evento => {
+['mousemove','mousedown','click','scroll','keypress','keydown','touchstart'].forEach(evento=>{
   document.addEventListener(evento, resetarInatividade);
 });
 
-document.getElementById("hora").addEventListener("input", function(e){
-  let valor = e.target.value.replace(/\D/g,"");
-
-  if(valor.length > 2){
-    valor = valor.substring(0,2) + ":" + valor.substring(2,4);
-  }
-
+document.getElementById('hora').addEventListener('input', function(e){
+  let valor = e.target.value.replace(/\D/g,'');
+  if(valor.length > 2) valor = valor.substring(0,2) + ':' + valor.substring(2,4);
   e.target.value = valor;
 });
 
-if(localStorage.getItem("logadoMov") === "sim"){
+if(localStorage.getItem('logadoMov') === 'sim'){
   abrirApp();
 }else{
   mostrarLogin();
