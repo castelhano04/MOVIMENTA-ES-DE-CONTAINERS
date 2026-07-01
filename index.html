@@ -119,9 +119,8 @@ body.modo-consulta .no-print-col{display:none!important}
         <input id="busca" placeholder="Pesquisar container" oninput="render()">
         <button class="btn blue" onclick="imprimirRelatorio()">IMPRIMIR RELATÓRIO</button>
         <button class="btn green admin-only" onclick="exportCSV()">EXPORTAR EXCEL/CSV</button>
-<button class="btn blue admin-only" onclick="enviarLocalParaFirebase()">
-  ENVIAR DADOS LOCAIS PARA FIREBASE
-</button>
+<button class="btn blue admin-only" onclick="sincronizarBackupLocal()">SINCRONIZAR BACKUP</button>
+        <span class="status" id="statusFirebase">Firebase: aguardando</span>
         <button class="btn red admin-only" onclick="excluirMovimentacoesDoMes()">EXCLUIR MOVIMENTAÇÕES DO MÊS</button>
       </div>
       <div class="muted">A busca mostra o container pesquisado e todas as movimentações dele no mês selecionado.</div>
@@ -160,6 +159,11 @@ let firebaseAtivo = false;
 try{
   firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
+  // Força conexão compatível em redes de empresa/proxy, evitando Promise travada em pending.
+  db.settings({
+    experimentalForceLongPolling: true,
+    useFetchStreams: false
+  });
   firebaseAtivo = true;
 }catch(e){
   console.log('Firebase não conectado:', e);
@@ -201,6 +205,14 @@ function setStatus(txt, ok=true){
   el.style.background = ok ? '#e9f7ef' : '#fff3cd';
   el.style.color = ok ? '#1d7f38' : '#8a5a00';
 }
+
+function comTimeout(promise, ms=10000){
+  return Promise.race([
+    promise,
+    new Promise((_, reject)=>setTimeout(()=>reject(new Error('Tempo esgotado ao conectar no Firebase')), ms))
+  ]);
+}
+
 
 function aplicarModo(){
   modoUsuario = localStorage.getItem(KEY_MODO) || '';
@@ -292,7 +304,7 @@ function carregarDados(){
   if(unsubscribeMov) unsubscribeMov();
   setStatus('Firebase: conectando...', false);
 
-  unsubscribeMov = db.collection('movimentacoes_camesa').orderBy('data').onSnapshot(snapshot=>{
+  unsubscribeMov = db.collection('movimentacoes_camesa').onSnapshot(snapshot=>{
     const firebaseDados = [];
 
     snapshot.docs.forEach(doc=>{
@@ -365,8 +377,11 @@ async function salvar(){
     return;
   }
 
+  const emEdicao = !!editId;
+  const idSalvar = editId || String(Date.now());
+
   const obj = {
-    id: editId || String(Date.now()),
+    id: idSalvar,
     data: document.getElementById('data').value,
     hora: document.getElementById('hora').value,
     container: document.getElementById('container').value.trim().toUpperCase(),
@@ -375,7 +390,8 @@ async function salvar(){
     cliente: 'CAMESA',
     solicitante: document.getElementById('solicitante').value.trim().toUpperCase(),
     local: document.getElementById('local').value,
-    _deleted: false
+    _deleted: false,
+    atualizadoEm: new Date().toISOString()
   };
 
   if(!obj.data || !obj.hora || !obj.container || !obj.operador || !obj.solicitante){
@@ -387,31 +403,38 @@ async function salvar(){
   localStorage.setItem('ultimoSolicitante', obj.solicitante);
   idsDeletados.delete(String(obj.id));
 
-  if(editId){
-    dados = dados.map(d => String(d.id) === String(editId) ? obj : d);
+  if(emEdicao){
+    dados = dados.map(d => String(d.id) === String(idSalvar) ? obj : d);
   }else{
     dados.push(obj);
   }
 
+  // Salva local primeiro, sempre. Assim não perde mesmo se o Firebase travar.
   salvarLocal();
   render();
 
-  try{
-    if(firebaseAtivo){
-      await db.collection('movimentacoes_camesa').doc(String(obj.id)).set(obj, {merge:true});
-      setStatus('Firebase: online', true);
-    }else{
-      setStatus('Firebase: backup salvo', false);
-    }
-  }catch(e){
-    console.error(e);
-    setStatus('Firebase: erro/backup salvo', false);
-    alert('Firebase falhou, mas a movimentação ficou salva no backup local.');
-  }
-
+  // Sai do modo edição imediatamente, para o próximo cadastro não editar o anterior.
   editId = null;
   document.getElementById('btnSalvar').textContent = 'SALVAR MOVIMENTAÇÃO';
   limparForm(false);
+
+  // Depois tenta enviar para Firebase com tempo limite.
+  if(firebaseAtivo && db){
+    try{
+      setStatus('Firebase: sincronizando...', false);
+      await comTimeout(
+        db.collection('movimentacoes_camesa').doc(String(obj.id)).set(obj, {merge:true}),
+        10000
+      );
+      setStatus('Firebase: online', true);
+    }catch(e){
+      console.error(e);
+      setStatus('Firebase: backup local salvo', false);
+      alert('Firebase demorou ou falhou, mas a movimentação ficou salva no backup local. Depois clique em SINCRONIZAR BACKUP.');
+    }
+  }else{
+    setStatus('Firebase: backup local salvo', false);
+  }
 }
 
 function limparForm(clear=true){
@@ -535,11 +558,11 @@ async function excluir(id){
 
   try{
     if(firebaseAtivo){
-      await db.collection('movimentacoes_camesa').doc(String(id)).set({
+      await comTimeout(db.collection('movimentacoes_camesa').doc(String(id)).set({
         id: String(id),
         _deleted: true,
         deletedAt: new Date().toISOString()
-      }, {merge:true});
+      }, {merge:true}), 10000);
     }
   }catch(e){
     console.error(e);
@@ -584,13 +607,13 @@ async function excluirMovimentacoesDoMes(){
         count++;
 
         if(count >= 450){
-          await batch.commit();
+          await comTimeout(batch.commit(), 15000);
           batch = db.batch();
           count = 0;
         }
       }
 
-      if(count > 0) await batch.commit();
+      if(count > 0) await comTimeout(batch.commit(), 15000);
     }
 
     alert('Movimentações excluídas com sucesso.');
@@ -660,13 +683,13 @@ async function sincronizarBackupLocal(mostrarMensagem=true){
       count++;
 
       if(count >= 450){
-        await batch.commit();
+        await comTimeout(batch.commit(), 15000);
         batch = db.batch();
         count = 0;
       }
     }
 
-    if(count > 0) await batch.commit();
+    if(count > 0) await comTimeout(batch.commit(), 15000);
 
     setStatus('Firebase: backup sincronizado', true);
     if(mostrarMensagem) alert('Backup local sincronizado com sucesso.');
