@@ -42,16 +42,26 @@ body.modo-consulta .admin-only{display:none!important}body.modo-consulta .no-pri
 <div class="app" id="app"><div class="top"><h1>MOVIMENTAÇÕES DE CONTAINERS</h1><button class="btn red sair-top" onclick="sair()">SAIR</button></div><div class="wrap">
 <div class="cards"><div class="card"><b id="totalMes">0</b><small>Total do mês</small></div><div class="card"><b id="totalItj">0</b><small>ITJ</small></div><div class="card"><b id="totalSp">0</b><small>SP</small></div><div class="card"><b id="totalBaixa">0</b><small>Baixas</small></div><div class="card"><b id="totalAjuste">0</b><small>Ajustes</small></div><div class="card"><b id="totalSaida">0</b><small>Saídas</small></div></div>
 <div class="panel no-print admin-only" id="cadastroPanel"><h2>Cadastrar movimentação</h2><div class="form"><input type="date" id="data"><input type="text" id="hora" placeholder="Ex: 08:15" maxlength="5"><input id="container" placeholder="Container"><select id="atividade"><option>AJUSTE</option><option>BAIXA</option><option>SAÍDA</option></select><select id="operador"><option value="IVAIR">IVAIR</option><option value="EDIMILSON">EDIMILSON</option></select><input id="solicitante" placeholder="Solicitante"><select id="local"><option>ITJ</option><option>SP</option></select></div><div class="actions"><button class="btn green" onclick="salvar()" id="btnSalvar">SALVAR MOVIMENTAÇÃO</button><button class="btn gray" onclick="limparForm()">LIMPAR</button></div><div class="muted">Cliente será salvo automaticamente como CAMESA. Salva no Firebase e mantém backup local.</div></div>
-<div class="panel no-print"><h2>Filtros e busca <span class="badge-modo" id="badgeModo">Modo</span> <span class="status" id="statusFirebase">Firebase: aguardando</span></h2><div class="filters"><select id="mes" onchange="aoMudarMes()"></select><button class="chip active" id="fTodos" onclick="setFiltro('TODOS')">TODOS</button><button class="chip" id="fITJ" onclick="setFiltro('ITJ')">ITJ</button><button class="chip" id="fSP" onclick="setFiltro('SP')">SP</button><input id="busca" placeholder="Pesquisar container" oninput="render()"><button class="btn blue" onclick="imprimirRelatorio()">IMPRIMIR RELATÓRIO</button><button class="btn green admin-only" onclick="exportCSV()">EXPORTAR EXCEL/CSV</button><button class="btn blue admin-only" onclick="sincronizarBackupLocal()">SINCRONIZAR BACKUP</button><button class="btn red admin-only" onclick="excluirMovimentacoesDoMes()">EXCLUIR MOVIMENTAÇÕES DO MÊS</button></div><div class="muted">A busca mostra o container pesquisado e todas as movimentações dele no mês selecionado.</div></div>
+<div class="panel no-print"><h2>Filtros e busca <span class="badge-modo" id="badgeModo">Modo</span> <span class="status" id="statusFirebase">Firebase: aguardando</span></h2><div class="filters"><select id="mes" onchange="aoMudarMes()"></select><button class="chip active" id="fTodos" onclick="setFiltro('TODOS')">TODOS</button><button class="chip" id="fITJ" onclick="setFiltro('ITJ')">ITJ</button><button class="chip" id="fSP" onclick="setFiltro('SP')">SP</button><input id="busca" placeholder="Pesquisar container" oninput="render()"><button class="btn blue" onclick="imprimirRelatorio()">IMPRIMIR RELATÓRIO</button><button class="btn green admin-only" onclick="exportCSV()">EXPORTAR EXCEL/CSV</button><button class="btn blue admin-only" onclick="sincronizarBackupLocal()">SINCRONIZAR BACKUP</button><button class="btn gray admin-only" onclick="testarFirebaseDireto()">TESTAR FIREBASE</button><button class="btn red admin-only" onclick="excluirMovimentacoesDoMes()">EXCLUIR MOVIMENTAÇÕES DO MÊS</button></div><div class="muted">A busca mostra o container pesquisado e todas as movimentações dele no mês selecionado.</div></div>
 <div class="table-area"><div class="title-table" id="tituloTabela">CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS</div><div class="print-only" id="subPrint"></div><table><thead><tr><th>DATA</th><th>HORÁRIO</th><th>CONTAINERS</th><th>ATIVIDADE</th><th>OPERADOR</th><th>CLIENTE</th><th>SOLICITANTE</th><th>LOCAL</th><th class="no-print-col">AÇÕES</th></tr></thead><tbody id="tbody"></tbody></table></div>
 </div></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyD6HSp4F8acXW6GBRwVnXxo-4-_c1JyLZw",authDomain:"controle-de-containers-da212.firebaseapp.com",projectId:"controle-de-containers-da212",storageBucket:"controle-de-containers-da212.firebasestorage.app",messagingSenderId:"404957948593",appId:"1:404957948593:web:f980f9d6556f8cc8769090",measurementId:"G-ZQ76YD5W9V"};
 const appFirebase=initializeApp(firebaseConfig);
-const db=getFirestore(appFirebase);
+
+// Firestore com conexão mais compatível para redes que travam em "Firebase: salvando..."
+const db=initializeFirestore(appFirebase,{
+  experimentalAutoDetectLongPolling:true,
+  useFetchStreams:false
+});
+
+// DEBUG: deixa o Firebase visível no Console para testes
+window.db = db;
+window.firebaseTools = { collection, getDocs, doc, setDoc, deleteDoc, addDoc };
+window.firebaseConfigPublic = firebaseConfig;
 const COLECAO='movimentacoes_camesa';
 const SENHA_ADMIN='161004',SENHA_CONSULTA='123';
 const KEY_DADOS='movContainersCamesa',KEY_PENDENTES='movContainersCamesaPendentes',KEY_DEL='movContainersCamesaPendentesDelete',KEY_MODO='modoUsuarioMov';
@@ -97,12 +107,46 @@ function exportCSV(){const lista=filtrar();if(!lista.length){alert('Nada para ex
 function imprimirRelatorio(){resetarInatividade();render();setTimeout(()=>window.print(),100)}
 window.addEventListener('afterprint',()=>{render();resetarInatividade()});
 async function sincronizarBackupLocal(mostrarMensagem=true){if(modoUsuario!=='admin'){if(mostrarMensagem)alert('Este acesso é somente para consulta.');return}setStatus('Firebase: sincronizando backup...','sync');let ok=0,erro=0;for(const item of pendentes){try{await setDoc(doc(db,COLECAO,String(item.id)),item);ok++}catch(e){console.error(e);erro++}}if(erro===0){pendentes=[];salvarPendentes()}let okDel=0,erroDel=0;for(const id of pendentesDelete){try{await deleteDoc(doc(db,COLECAO,String(id)));okDel++}catch(e){console.error(e);erroDel++}}if(erroDel===0){pendentesDelete=[];salvarPendentesDelete()}if(erro===0&&erroDel===0){setStatus('Firebase: backup sincronizado','ok');if(mostrarMensagem)alert(`Backup sincronizado. Salvos: ${ok}. Excluídos: ${okDel}.`);setTimeout(()=>setStatus('Firebase: online','ok'),1500)}else{setStatus('Firebase: erro ao sincronizar','erro');if(mostrarMensagem)alert(`Ainda ficou pendente. Salvos com erro: ${erro}. Exclusões com erro: ${erroDel}.`)}}
+
+async function testarFirebaseDireto(){
+  if(modoUsuario!=='admin'){
+    alert('Este acesso é somente para consulta.');
+    return;
+  }
+  setStatus('Firebase: testando...','sync');
+  try{
+    const id = 'teste_manual_' + Date.now();
+    const obj = {
+      id,
+      data: new Date().toISOString().slice(0,10),
+      hora: new Date().toTimeString().slice(0,5),
+      container: 'TESTE_FIREBASE',
+      atividade: 'AJUSTE',
+      operador: 'IVAIR',
+      cliente: 'CAMESA',
+      solicitante: 'ANDERSON',
+      local: 'ITJ',
+      atualizadoEm: new Date().toISOString()
+    };
+    console.log('TESTE FIREBASE ENVIANDO:', obj);
+    await setDoc(doc(db, COLECAO, id), obj);
+    console.log('TESTE FIREBASE SALVO:', id);
+    setStatus('Firebase: teste salvo','ok');
+    alert('Teste salvo no Firebase. Agora atualize o Firestore e procure a coleção movimentacoes_camesa.');
+    await carregar();
+  }catch(e){
+    console.error('ERRO NO TESTE FIREBASE:', e);
+    setStatus('Firebase: erro no teste','erro');
+    alert('Erro no teste Firebase: ' + (e.message || e));
+  }
+}
+
 function resetarInatividade(){clearTimeout(tempoInatividade);if(localStorage.getItem('logadoMov')!=='sim')return;tempoInatividade=setTimeout(()=>{localStorage.removeItem('logadoMov');localStorage.removeItem(KEY_MODO);document.getElementById('pass').value='';document.getElementById('loginErro').style.display='none';mostrarLogin()},TEMPO_MAXIMO)}
 ['mousemove','mousedown','click','scroll','keypress','keydown','touchstart'].forEach(evento=>document.addEventListener(evento,resetarInatividade));
 document.getElementById('hora').addEventListener('input',function(e){let valor=e.target.value.replace(/\D/g,'');if(valor.length>2)valor=valor.substring(0,2)+':'+valor.substring(2,4);e.target.value=valor});
 if(localStorage.getItem('logadoMov')==='sim')abrirApp();else mostrarLogin();
 
-window.login=login;window.sair=sair;window.salvar=salvar;window.limparForm=limparForm;window.aoMudarMes=aoMudarMes;window.setFiltro=setFiltro;window.imprimirRelatorio=imprimirRelatorio;window.exportCSV=exportCSV;window.sincronizarBackupLocal=sincronizarBackupLocal;window.excluirMovimentacoesDoMes=excluirMovimentacoesDoMes;window.editar=editar;window.excluir=excluir;window.render=render;
+window.testarFirebaseDireto=testarFirebaseDireto;window.login=login;window.sair=sair;window.salvar=salvar;window.limparForm=limparForm;window.aoMudarMes=aoMudarMes;window.setFiltro=setFiltro;window.imprimirRelatorio=imprimirRelatorio;window.exportCSV=exportCSV;window.sincronizarBackupLocal=sincronizarBackupLocal;window.excluirMovimentacoesDoMes=excluirMovimentacoesDoMes;window.editar=editar;window.excluir=excluir;window.render=render;
 </script>
 </body>
 </html>
