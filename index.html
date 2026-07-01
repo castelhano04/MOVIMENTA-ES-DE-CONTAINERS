@@ -47,106 +47,697 @@ body.modo-consulta .admin-only{display:none!important}body.modo-consulta .no-pri
 </div></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { initializeFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyD6HSp4F8acXW6GBRwVnXxo-4-_c1JyLZw",authDomain:"controle-de-containers-da212.firebaseapp.com",projectId:"controle-de-containers-da212",storageBucket:"controle-de-containers-da212.firebasestorage.app",messagingSenderId:"404957948593",appId:"1:404957948593:web:f980f9d6556f8cc8769090",measurementId:"G-ZQ76YD5W9V"};
-const appFirebase=initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: "AIzaSyD6HSp4F8acXW6GBRwVnXxo-4-_c1JyLZw",
+  authDomain: "controle-de-containers-da212.firebaseapp.com",
+  projectId: "controle-de-containers-da212",
+  storageBucket: "controle-de-containers-da212.firebasestorage.app",
+  messagingSenderId: "404957948593",
+  appId: "1:404957948593:web:f980f9d6556f8cc8769090",
+  measurementId: "G-ZQ76YD5W9V"
+};
 
-// Firestore com conexão mais compatível para redes que travam em "Firebase: salvando..."
-const db=initializeFirestore(appFirebase,{
-  experimentalAutoDetectLongPolling:true,
-  useFetchStreams:false
-});
+const appFirebase = initializeApp(firebaseConfig);
+const db = getFirestore(appFirebase);
 
-// DEBUG: deixa o Firebase visível no Console para testes
+const COLECAO = "movimentacoes_camesa";
+const REST_BASE = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/${COLECAO}`;
+
+const SENHA_ADMIN = "161004";
+const SENHA_CONSULTA = "123";
+const KEY_DADOS = "movContainersCamesa";
+const KEY_PENDENTES = "movContainersCamesaPendentes";
+const KEY_DEL = "movContainersCamesaPendentesDelete";
+const KEY_MODO = "modoUsuarioMov";
+
+let dados = carregarLocal();
+let pendentes = carregarJson(KEY_PENDENTES, []);
+let pendentesDelete = carregarJson(KEY_DEL, []);
+let filtroLocal = "TODOS";
+let editId = null;
+let tempoInatividade = null;
+let modoUsuario = localStorage.getItem(KEY_MODO) || "";
+
+const TEMPO_MAXIMO = 3 * 60 * 1000;
+const mesesNome = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+
 window.db = db;
-window.firebaseTools = { collection, getDocs, doc, setDoc, deleteDoc, addDoc };
 window.firebaseConfigPublic = firebaseConfig;
-const COLECAO='movimentacoes_camesa';
-const SENHA_ADMIN='161004',SENHA_CONSULTA='123';
-const KEY_DADOS='movContainersCamesa',KEY_PENDENTES='movContainersCamesaPendentes',KEY_DEL='movContainersCamesaPendentesDelete',KEY_MODO='modoUsuarioMov';
-let dados=carregarLocal();
-let pendentes=carregarPendentes();
-let pendentesDelete=carregarPendentesDelete();
-let filtroLocal='TODOS',editId=null,tempoInatividade=null,modoUsuario=localStorage.getItem(KEY_MODO)||'';
-const TEMPO_MAXIMO=3*60*1000;
-const mesesNome=['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
 
-function carregarLocal(){try{return JSON.parse(localStorage.getItem(KEY_DADOS)||'[]')}catch(e){return[]}}
-function salvarLocal(){localStorage.setItem(KEY_DADOS,JSON.stringify(dados))}
-function carregarPendentes(){try{return JSON.parse(localStorage.getItem(KEY_PENDENTES)||'[]')}catch(e){return[]}}
-function salvarPendentes(){localStorage.setItem(KEY_PENDENTES,JSON.stringify(pendentes))}
-function carregarPendentesDelete(){try{return JSON.parse(localStorage.getItem(KEY_DEL)||'[]')}catch(e){return[]}}
-function salvarPendentesDelete(){localStorage.setItem(KEY_DEL,JSON.stringify(pendentesDelete))}
-function setStatus(txt,tipo='sync'){const el=document.getElementById('statusFirebase');if(!el)return;el.textContent=txt;el.className='status '+tipo}
-function unirPorId(lista){const mapa={};lista.forEach(i=>{if(i&&i.id)mapa[String(i.id)]=i});return Object.values(mapa)}
-function atualizarLocal(obj){dados=unirPorId([...dados,obj]);salvarLocal();render()}
-function removerLocal(id){dados=dados.filter(d=>String(d.id)!==String(id));salvarLocal();render()}
-function aplicarModo(){modoUsuario=localStorage.getItem(KEY_MODO)||'';document.body.classList.toggle('modo-consulta',modoUsuario==='consulta');const badge=document.getElementById('badgeModo');if(badge){if(modoUsuario==='admin'){badge.textContent='ADM';badge.style.background='#dcfce7';badge.style.color='#166534'}else{badge.textContent='CONSULTA';badge.style.background='#dbeafe';badge.style.color='#1d4ed8'}}render()}
-function login(){const pass=document.getElementById('pass').value;if(pass===SENHA_ADMIN){localStorage.setItem('logadoMov','sim');localStorage.setItem(KEY_MODO,'admin');document.getElementById('loginErro').style.display='none';abrirApp();return}if(pass===SENHA_CONSULTA){localStorage.setItem('logadoMov','sim');localStorage.setItem(KEY_MODO,'consulta');document.getElementById('loginErro').style.display='none';abrirApp();return}document.getElementById('loginErro').style.display='block'}
-function sair(){localStorage.removeItem('logadoMov');localStorage.removeItem(KEY_MODO);location.reload()}
-function abrirApp(){document.body.classList.remove('boot');document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';aplicarModo();init();resetarInatividade()}
-function mostrarLogin(){document.body.classList.remove('boot');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('pass').value='';document.getElementById('pass').focus()}
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginScreen').style.display!=='none')login()});
-function init(){const hoje=new Date();document.getElementById('data').value=hoje.toISOString().slice(0,10);document.getElementById('hora').value=hoje.toTimeString().slice(0,5);const op=localStorage.getItem('ultimoOperador');document.getElementById('operador').value=(op==='EDIMILSON'||op==='IVAIR')?op:'IVAIR';document.getElementById('solicitante').value=localStorage.getItem('ultimoSolicitante')||'ANDERSON';montarMeses();carregar()}
-async function carregar(){dados=carregarLocal();render();setStatus('Firebase: carregando...','sync');try{const snap=await getDocs(collection(db,COLECAO));const firebaseDados=[];snap.forEach(docu=>firebaseDados.push({id:docu.id,...docu.data()}));dados=unirPorId([...dados,...firebaseDados]);salvarLocal();render();setStatus('Firebase: online','ok');if(modoUsuario==='admin'&&(pendentes.length||pendentesDelete.length))sincronizarBackupLocal(false)}catch(e){console.error('Erro ao carregar Firebase:',e);setStatus('Firebase: backup local','erro')}}
-function montarMeses(){const sel=document.getElementById('mes');sel.innerHTML='';const anoAtual=new Date().getFullYear();const mesAtual=new Date().getMonth()+1;for(let m=1;m<=12;m++){const v=`${anoAtual}-${String(m).padStart(2,'0')}`;const op=document.createElement('option');op.value=v;op.textContent=`${mesesNome[m-1]} / ${anoAtual}`;sel.appendChild(op)}const salvo=localStorage.getItem('mesSelecionadoMov');sel.value=salvo&&salvo.startsWith(String(anoAtual))?salvo:`${anoAtual}-${String(mesAtual).padStart(2,'0')}`}
-function aoMudarMes(){localStorage.setItem('mesSelecionadoMov',document.getElementById('mes').value);render()}
-function setFiltro(f){filtroLocal=f;['TODOS','ITJ','SP'].forEach(x=>{const botao=document.getElementById('f'+x);if(botao)botao.classList.toggle('active',x===f)});render()}
-async function salvar(){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}const obj={id:editId||String(Date.now()),data:document.getElementById('data').value,hora:document.getElementById('hora').value,container:document.getElementById('container').value.trim().toUpperCase(),atividade:document.getElementById('atividade').value,operador:document.getElementById('operador').value.trim().toUpperCase(),cliente:'CAMESA',solicitante:document.getElementById('solicitante').value.trim().toUpperCase(),local:document.getElementById('local').value,atualizadoEm:new Date().toISOString()};if(!obj.data||!obj.hora||!obj.container||!obj.operador||!obj.solicitante){alert('Preencha data, horário, container, operador e solicitante.');return}localStorage.setItem('ultimoOperador',obj.operador);localStorage.setItem('ultimoSolicitante',obj.solicitante);atualizarLocal(obj);editId=null;document.getElementById('btnSalvar').textContent='SALVAR MOVIMENTAÇÃO';limparForm(false);setStatus('Firebase: salvando...','sync');try{await setDoc(doc(db,COLECAO,String(obj.id)),obj);pendentes=pendentes.filter(p=>String(p.id)!==String(obj.id));salvarPendentes();setStatus('Firebase: salvo','ok');setTimeout(()=>setStatus('Firebase: online','ok'),1200)}catch(e){console.error('Erro ao salvar Firebase:',e);pendentes=unirPorId([...pendentes,obj]);salvarPendentes();setStatus('Firebase: backup local','erro');alert('Não consegui salvar no Firebase agora. Ficou no backup local. Clique em SINCRONIZAR BACKUP depois.')}}
-function limparForm(clear=true){editId=null;document.getElementById('btnSalvar').textContent='SALVAR MOVIMENTAÇÃO';document.getElementById('container').value='';if(clear){document.getElementById('operador').value='IVAIR';document.getElementById('solicitante').value='ANDERSON'}document.getElementById('container').focus()}
-function mesDoItem(d){return d.data?d.data.slice(0,7):''}
-function filtrar(){const mes=document.getElementById('mes').value;const busca=document.getElementById('busca').value.trim().toUpperCase();return dados.filter(d=>mesDoItem(d)===mes).filter(d=>filtroLocal==='TODOS'||d.local===filtroLocal).filter(d=>!busca||String(d.container||'').includes(busca)).sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora))}
-function render(){const mes=document.getElementById('mes')?.value;if(!mes)return;document.getElementById('tituloTabela').textContent='CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS';document.getElementById('subPrint').textContent='';const mesDados=dados.filter(d=>mesDoItem(d)===mes);document.getElementById('totalMes').textContent=mesDados.length;document.getElementById('totalItj').textContent=mesDados.filter(d=>d.local==='ITJ').length;document.getElementById('totalSp').textContent=mesDados.filter(d=>d.local==='SP').length;document.getElementById('totalBaixa').textContent=mesDados.filter(d=>d.atividade==='BAIXA').length;document.getElementById('totalAjuste').textContent=mesDados.filter(d=>d.atividade==='AJUSTE').length;document.getElementById('totalSaida').textContent=mesDados.filter(d=>d.atividade==='SAÍDA').length;const lista=filtrar();const tbody=document.getElementById('tbody');tbody.innerHTML='';lista.forEach(d=>tbody.appendChild(linha(d)));const linhasVazias=Math.max(20-lista.length,0);for(let i=0;i<linhasVazias;i++){const tr=document.createElement('tr');tr.innerHTML='<td></td><td></td><td></td><td></td><td></td><td>CAMESA</td><td></td><td></td><td class="no-print-col"></td>';tbody.appendChild(tr)}}
-function formataData(dt){if(!dt)return'';const[a,m,d]=dt.split('-');return`${d}/${m}/${String(a).slice(2)}`}
-function linha(d){const tr=document.createElement('tr');if(d.local==='SP')tr.classList.add('linha-sp');const classeLocal=d.local==='SP'?'local-sp':'local-itj';const acoes=modoUsuario==='admin'?`<td class="no-print-col"><button class="edit" onclick="editar('${d.id}')">Editar</button> <button class="del" onclick="excluir('${d.id}')">Excluir</button></td>`:`<td class="no-print-col"></td>`;tr.innerHTML=`<td>${formataData(d.data)}</td><td>${d.hora}</td><td>${d.container}</td><td>${d.atividade}</td><td>${d.operador}</td><td>${d.cliente||'CAMESA'}</td><td>${d.solicitante}</td><td class="${classeLocal}">${d.local}</td>${acoes}`;return tr}
-function editar(id){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}const d=dados.find(x=>String(x.id)===String(id));if(!d)return;editId=id;['data','hora','container','atividade','operador','solicitante','local'].forEach(k=>document.getElementById(k).value=d[k]);document.getElementById('btnSalvar').textContent='SALVAR ALTERAÇÃO';scrollTo({top:0,behavior:'smooth'})}
-async function excluir(id){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}if(!confirm('Excluir esta movimentação?'))return;removerLocal(id);pendentes=pendentes.filter(p=>String(p.id)!==String(id));pendentesDelete=[...new Set([...pendentesDelete,String(id)])];salvarPendentes();salvarPendentesDelete();setStatus('Firebase: excluindo...','sync');try{await deleteDoc(doc(db,COLECAO,String(id)));pendentesDelete=pendentesDelete.filter(x=>String(x)!==String(id));salvarPendentesDelete();setStatus('Firebase: online','ok')}catch(e){console.error('Erro ao excluir Firebase:',e);setStatus('Firebase: exclusão pendente','erro');alert('Excluiu da tela e ficou pendente para sincronizar no Firebase.')}}
-async function excluirMovimentacoesDoMes(){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}const mesSelecionado=document.getElementById('mes').value;const registrosMes=dados.filter(d=>mesDoItem(d)===mesSelecionado);if(!registrosMes.length){alert('Não existem movimentações neste mês.');return}if(!confirm(`Excluir ${registrosMes.length} movimentações do mês selecionado?`))return;for(const r of registrosMes){removerLocal(r.id);pendentesDelete=[...new Set([...pendentesDelete,String(r.id)])]}salvarPendentesDelete();await sincronizarBackupLocal(false);alert('Movimentações do mês removidas. Se houver falha de internet, ficam pendentes para sincronizar.')}
-function exportCSV(){const lista=filtrar();if(!lista.length){alert('Nada para exportar.');return}const cab=['DATA','HORARIO','CONTAINER','ATIVIDADE','OPERADOR','CLIENTE','SOLICITANTE','LOCAL'];const linhas=lista.map(d=>[formataData(d.data),d.hora,d.container,d.atividade,d.operador,d.cliente||'CAMESA',d.solicitante,d.local]);const csv=[cab,...linhas].map(r=>r.join(';')).join('\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='movimentacoes_containers.csv';a.click()}
-function imprimirRelatorio(){resetarInatividade();render();setTimeout(()=>window.print(),100)}
-window.addEventListener('afterprint',()=>{render();resetarInatividade()});
-async function sincronizarBackupLocal(mostrarMensagem=true){if(modoUsuario!=='admin'){if(mostrarMensagem)alert('Este acesso é somente para consulta.');return}setStatus('Firebase: sincronizando backup...','sync');let ok=0,erro=0;for(const item of pendentes){try{await setDoc(doc(db,COLECAO,String(item.id)),item);ok++}catch(e){console.error(e);erro++}}if(erro===0){pendentes=[];salvarPendentes()}let okDel=0,erroDel=0;for(const id of pendentesDelete){try{await deleteDoc(doc(db,COLECAO,String(id)));okDel++}catch(e){console.error(e);erroDel++}}if(erroDel===0){pendentesDelete=[];salvarPendentesDelete()}if(erro===0&&erroDel===0){setStatus('Firebase: backup sincronizado','ok');if(mostrarMensagem)alert(`Backup sincronizado. Salvos: ${ok}. Excluídos: ${okDel}.`);setTimeout(()=>setStatus('Firebase: online','ok'),1500)}else{setStatus('Firebase: erro ao sincronizar','erro');if(mostrarMensagem)alert(`Ainda ficou pendente. Salvos com erro: ${erro}. Exclusões com erro: ${erroDel}.`)}}
-
-async function testarFirebaseDireto(){
-  if(modoUsuario!=='admin'){
-    alert('Este acesso é somente para consulta.');
-    return;
-  }
-  setStatus('Firebase: testando...','sync');
+function carregarJson(chave, padrao){
   try{
-    const id = 'teste_manual_' + Date.now();
-    const obj = {
-      id,
-      data: new Date().toISOString().slice(0,10),
-      hora: new Date().toTimeString().slice(0,5),
-      container: 'TESTE_FIREBASE',
-      atividade: 'AJUSTE',
-      operador: 'IVAIR',
-      cliente: 'CAMESA',
-      solicitante: 'ANDERSON',
-      local: 'ITJ',
-      atualizadoEm: new Date().toISOString()
-    };
-    console.log('TESTE FIREBASE ENVIANDO:', obj);
-    await setDoc(doc(db, COLECAO, id), obj);
-    console.log('TESTE FIREBASE SALVO:', id);
-    setStatus('Firebase: teste salvo','ok');
-    alert('Teste salvo no Firebase. Agora atualize o Firestore e procure a coleção movimentacoes_camesa.');
-    await carregar();
+    const raw = localStorage.getItem(chave);
+    return raw ? JSON.parse(raw) : padrao;
   }catch(e){
-    console.error('ERRO NO TESTE FIREBASE:', e);
-    setStatus('Firebase: erro no teste','erro');
-    alert('Erro no teste Firebase: ' + (e.message || e));
+    return padrao;
   }
 }
 
-function resetarInatividade(){clearTimeout(tempoInatividade);if(localStorage.getItem('logadoMov')!=='sim')return;tempoInatividade=setTimeout(()=>{localStorage.removeItem('logadoMov');localStorage.removeItem(KEY_MODO);document.getElementById('pass').value='';document.getElementById('loginErro').style.display='none';mostrarLogin()},TEMPO_MAXIMO)}
-['mousemove','mousedown','click','scroll','keypress','keydown','touchstart'].forEach(evento=>document.addEventListener(evento,resetarInatividade));
-document.getElementById('hora').addEventListener('input',function(e){let valor=e.target.value.replace(/\D/g,'');if(valor.length>2)valor=valor.substring(0,2)+':'+valor.substring(2,4);e.target.value=valor});
-if(localStorage.getItem('logadoMov')==='sim')abrirApp();else mostrarLogin();
+function carregarLocal(){
+  return carregarJson(KEY_DADOS, []);
+}
 
-window.testarFirebaseDireto=testarFirebaseDireto;window.login=login;window.sair=sair;window.salvar=salvar;window.limparForm=limparForm;window.aoMudarMes=aoMudarMes;window.setFiltro=setFiltro;window.imprimirRelatorio=imprimirRelatorio;window.exportCSV=exportCSV;window.sincronizarBackupLocal=sincronizarBackupLocal;window.excluirMovimentacoesDoMes=excluirMovimentacoesDoMes;window.editar=editar;window.excluir=excluir;window.render=render;
+function salvarLocal(){
+  localStorage.setItem(KEY_DADOS, JSON.stringify(unirPorId(dados)));
+}
+
+function salvarPendentes(){
+  localStorage.setItem(KEY_PENDENTES, JSON.stringify(unirPorId(pendentes)));
+}
+
+function salvarPendentesDelete(){
+  localStorage.setItem(KEY_DEL, JSON.stringify([...new Set(pendentesDelete.map(String))]));
+}
+
+function setStatus(texto, tipo="sync"){
+  const el = document.getElementById("statusFirebase");
+  if(!el) return;
+  el.textContent = texto;
+  el.className = "status " + tipo;
+}
+
+function unirPorId(lista){
+  const mapa = {};
+  (lista || []).forEach(item => {
+    if(item && item.id != null){
+      mapa[String(item.id)] = item;
+    }
+  });
+  return Object.values(mapa);
+}
+
+function atualizarLocal(obj){
+  dados = unirPorId([...dados, obj]);
+  salvarLocal();
+  render();
+}
+
+function removerLocal(id){
+  dados = dados.filter(d => String(d.id) !== String(id));
+  salvarLocal();
+  render();
+}
+
+function comTimeout(promise, ms=7000){
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT_FIREBASE")), ms))
+  ]);
+}
+
+function valorFirestore(v){
+  if(typeof v === "boolean") return { booleanValue: v };
+  if(typeof v === "number") return { doubleValue: v };
+  return { stringValue: String(v ?? "") };
+}
+
+function paraFirestore(obj){
+  const fields = {};
+  Object.keys(obj).forEach(k => fields[k] = valorFirestore(obj[k]));
+  return { fields };
+}
+
+function deFirestore(docRest){
+  const fields = docRest.fields || {};
+  const obj = { id: (docRest.name || "").split("/").pop() };
+  Object.keys(fields).forEach(k => {
+    const v = fields[k];
+    if(v.stringValue !== undefined) obj[k] = v.stringValue;
+    else if(v.booleanValue !== undefined) obj[k] = v.booleanValue;
+    else if(v.doubleValue !== undefined) obj[k] = Number(v.doubleValue);
+    else if(v.integerValue !== undefined) obj[k] = Number(v.integerValue);
+    else obj[k] = "";
+  });
+  return obj;
+}
+
+async function salvarFirebase(obj){
+  const id = String(obj.id);
+  const native = setDoc(doc(db, COLECAO, id), obj);
+  try{
+    await comTimeout(native, 7000);
+    return "sdk";
+  }catch(e){
+    console.warn("SDK demorou/falhou. Tentando REST...", e);
+    const url = `${REST_BASE}/${encodeURIComponent(id)}?key=${firebaseConfig.apiKey}`;
+    const resp = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(paraFirestore(obj))
+    });
+    if(!resp.ok){
+      const txt = await resp.text();
+      throw new Error("REST_FIREBASE_ERRO: " + txt);
+    }
+    return "rest";
+  }
+}
+
+async function excluirFirebase(id){
+  id = String(id);
+  const native = deleteDoc(doc(db, COLECAO, id));
+  try{
+    await comTimeout(native, 7000);
+    return "sdk";
+  }catch(e){
+    console.warn("Delete SDK demorou/falhou. Tentando REST...", e);
+    const url = `${REST_BASE}/${encodeURIComponent(id)}?key=${firebaseConfig.apiKey}`;
+    const resp = await fetch(url, { method: "DELETE" });
+    if(!resp.ok && resp.status !== 404){
+      const txt = await resp.text();
+      throw new Error("REST_DELETE_ERRO: " + txt);
+    }
+    return "rest";
+  }
+}
+
+async function listarFirebase(){
+  try{
+    const snap = await comTimeout(getDocs(collection(db, COLECAO)), 7000);
+    const lista = [];
+    snap.forEach(docu => lista.push({ id: docu.id, ...docu.data() }));
+    return lista;
+  }catch(e){
+    console.warn("Leitura SDK demorou/falhou. Tentando REST...", e);
+    const url = `${REST_BASE}?key=${firebaseConfig.apiKey}&pageSize=1000`;
+    const resp = await fetch(url);
+    if(resp.status === 404) return [];
+    if(!resp.ok){
+      const txt = await resp.text();
+      throw new Error("REST_LISTAR_ERRO: " + txt);
+    }
+    const json = await resp.json();
+    return (json.documents || []).map(deFirestore);
+  }
+}
+
+function aplicarModo(){
+  modoUsuario = localStorage.getItem(KEY_MODO) || "";
+  document.body.classList.toggle("modo-consulta", modoUsuario === "consulta");
+
+  const badge = document.getElementById("badgeModo");
+  if(badge){
+    if(modoUsuario === "admin"){
+      badge.textContent = "ADM";
+      badge.style.background = "#dcfce7";
+      badge.style.color = "#166534";
+    }else{
+      badge.textContent = "CONSULTA";
+      badge.style.background = "#dbeafe";
+      badge.style.color = "#1d4ed8";
+    }
+  }
+  render();
+}
+
+function login(){
+  const pass = document.getElementById("pass").value;
+
+  if(pass === SENHA_ADMIN){
+    localStorage.setItem("logadoMov","sim");
+    localStorage.setItem(KEY_MODO,"admin");
+    document.getElementById("loginErro").style.display = "none";
+    abrirApp();
+    return;
+  }
+
+  if(pass === SENHA_CONSULTA){
+    localStorage.setItem("logadoMov","sim");
+    localStorage.setItem(KEY_MODO,"consulta");
+    document.getElementById("loginErro").style.display = "none";
+    abrirApp();
+    return;
+  }
+
+  document.getElementById("loginErro").style.display = "block";
+}
+
+function sair(){
+  localStorage.removeItem("logadoMov");
+  localStorage.removeItem(KEY_MODO);
+  location.reload();
+}
+
+function abrirApp(){
+  document.body.classList.remove("boot");
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  aplicarModo();
+  init();
+  resetarInatividade();
+}
+
+function mostrarLogin(){
+  document.body.classList.remove("boot");
+  document.getElementById("app").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("pass").value = "";
+  document.getElementById("pass").focus();
+}
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Enter" && document.getElementById("loginScreen").style.display !== "none") login();
+});
+
+function init(){
+  const hoje = new Date();
+  document.getElementById("data").value = hoje.toISOString().slice(0,10);
+  document.getElementById("hora").value = hoje.toTimeString().slice(0,5);
+
+  const op = localStorage.getItem("ultimoOperador");
+  document.getElementById("operador").value = (op === "EDIMILSON" || op === "IVAIR") ? op : "IVAIR";
+  document.getElementById("solicitante").value = localStorage.getItem("ultimoSolicitante") || "ANDERSON";
+
+  montarMeses();
+  carregar();
+}
+
+async function carregar(){
+  dados = carregarLocal();
+  render();
+  setStatus("Firebase: carregando...", "sync");
+
+  try{
+    const firebaseDados = await listarFirebase();
+    dados = unirPorId([...dados, ...firebaseDados]);
+    salvarLocal();
+    render();
+    setStatus("Firebase: online", "ok");
+
+    if(modoUsuario === "admin" && (pendentes.length || pendentesDelete.length)){
+      sincronizarBackupLocal(false);
+    }
+  }catch(e){
+    console.error("Erro ao carregar Firebase:", e);
+    setStatus("Firebase: backup local", "erro");
+  }
+}
+
+function montarMeses(){
+  const sel = document.getElementById("mes");
+  sel.innerHTML = "";
+
+  const anoAtual = new Date().getFullYear();
+  const mesAtual = new Date().getMonth() + 1;
+
+  for(let m=1; m<=12; m++){
+    const v = `${anoAtual}-${String(m).padStart(2,"0")}`;
+    const op = document.createElement("option");
+    op.value = v;
+    op.textContent = `${mesesNome[m-1]} / ${anoAtual}`;
+    sel.appendChild(op);
+  }
+
+  const salvo = localStorage.getItem("mesSelecionadoMov");
+  sel.value = salvo && salvo.startsWith(String(anoAtual)) ? salvo : `${anoAtual}-${String(mesAtual).padStart(2,"0")}`;
+}
+
+function aoMudarMes(){
+  localStorage.setItem("mesSelecionadoMov", document.getElementById("mes").value);
+  render();
+}
+
+function setFiltro(f){
+  filtroLocal = f;
+  ["TODOS","ITJ","SP"].forEach(x => {
+    const botao = document.getElementById("f"+x);
+    if(botao) botao.classList.toggle("active", x === f);
+  });
+  render();
+}
+
+async function salvar(){
+  if(modoUsuario !== "admin"){
+    alert("Este acesso é somente para consulta.");
+    return;
+  }
+
+  const obj = {
+    id: editId || String(Date.now()),
+    data: document.getElementById("data").value,
+    hora: document.getElementById("hora").value,
+    container: document.getElementById("container").value.trim().toUpperCase(),
+    atividade: document.getElementById("atividade").value,
+    operador: document.getElementById("operador").value.trim().toUpperCase(),
+    cliente: "CAMESA",
+    solicitante: document.getElementById("solicitante").value.trim().toUpperCase(),
+    local: document.getElementById("local").value,
+    atualizadoEm: new Date().toISOString()
+  };
+
+  if(!obj.data || !obj.hora || !obj.container || !obj.operador || !obj.solicitante){
+    alert("Preencha data, horário, container, operador e solicitante.");
+    return;
+  }
+
+  localStorage.setItem("ultimoOperador", obj.operador);
+  localStorage.setItem("ultimoSolicitante", obj.solicitante);
+
+  atualizarLocal(obj);
+
+  editId = null;
+  document.getElementById("btnSalvar").textContent = "SALVAR MOVIMENTAÇÃO";
+  limparForm(false);
+
+  setStatus("Firebase: salvando...", "sync");
+
+  try{
+    const meio = await salvarFirebase(obj);
+    pendentes = pendentes.filter(p => String(p.id) !== String(obj.id));
+    salvarPendentes();
+
+    setStatus(`Firebase: salvo (${meio})`, "ok");
+    setTimeout(() => setStatus("Firebase: online", "ok"), 1200);
+  }catch(e){
+    console.error("Erro ao salvar Firebase:", e);
+    pendentes = unirPorId([...pendentes, obj]);
+    salvarPendentes();
+    setStatus("Firebase: backup local", "erro");
+    alert("Não consegui salvar no Firebase agora. Ficou no backup local. Clique em SINCRONIZAR BACKUP depois.");
+  }
+}
+
+function limparForm(clear=true){
+  editId = null;
+  document.getElementById("btnSalvar").textContent = "SALVAR MOVIMENTAÇÃO";
+  document.getElementById("container").value = "";
+
+  if(clear){
+    document.getElementById("operador").value = "IVAIR";
+    document.getElementById("solicitante").value = "ANDERSON";
+  }
+
+  document.getElementById("container").focus();
+}
+
+function mesDoItem(d){
+  return d.data ? d.data.slice(0,7) : "";
+}
+
+function filtrar(){
+  const mes = document.getElementById("mes").value;
+  const busca = document.getElementById("busca").value.trim().toUpperCase();
+
+  return dados
+    .filter(d => mesDoItem(d) === mes)
+    .filter(d => filtroLocal === "TODOS" || d.local === filtroLocal)
+    .filter(d => !busca || String(d.container || "").includes(busca))
+    .sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora));
+}
+
+function render(){
+  const mes = document.getElementById("mes")?.value;
+  if(!mes) return;
+
+  document.getElementById("tituloTabela").textContent = "CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS";
+  document.getElementById("subPrint").textContent = "";
+
+  const mesDados = dados.filter(d => mesDoItem(d) === mes);
+  document.getElementById("totalMes").textContent = mesDados.length;
+  document.getElementById("totalItj").textContent = mesDados.filter(d=>d.local==="ITJ").length;
+  document.getElementById("totalSp").textContent = mesDados.filter(d=>d.local==="SP").length;
+  document.getElementById("totalBaixa").textContent = mesDados.filter(d=>d.atividade==="BAIXA").length;
+  document.getElementById("totalAjuste").textContent = mesDados.filter(d=>d.atividade==="AJUSTE").length;
+  document.getElementById("totalSaida").textContent = mesDados.filter(d=>d.atividade==="SAÍDA").length;
+
+  const lista = filtrar();
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  lista.forEach(d => tbody.appendChild(linha(d)));
+
+  const linhasVazias = Math.max(20-lista.length,0);
+  for(let i=0;i<linhasVazias;i++){
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td></td><td></td><td></td><td></td><td></td><td>CAMESA</td><td></td><td></td><td class='no-print-col'></td>";
+    tbody.appendChild(tr);
+  }
+}
+
+function formataData(dt){
+  if(!dt) return "";
+  const [a,m,d] = dt.split("-");
+  return `${d}/${m}/${String(a).slice(2)}`;
+}
+
+function linha(d){
+  const tr = document.createElement("tr");
+  if(d.local === "SP") tr.classList.add("linha-sp");
+
+  const classeLocal = d.local === "SP" ? "local-sp" : "local-itj";
+  const acoes = modoUsuario === "admin"
+    ? `<td class="no-print-col"><button class="edit" onclick="editar('${d.id}')">Editar</button> <button class="del" onclick="excluir('${d.id}')">Excluir</button></td>`
+    : `<td class="no-print-col"></td>`;
+
+  tr.innerHTML = `
+    <td>${formataData(d.data)}</td>
+    <td>${d.hora}</td>
+    <td>${d.container}</td>
+    <td>${d.atividade}</td>
+    <td>${d.operador}</td>
+    <td>${d.cliente || "CAMESA"}</td>
+    <td>${d.solicitante}</td>
+    <td class="${classeLocal}">${d.local}</td>
+    ${acoes}
+  `;
+
+  return tr;
+}
+
+function editar(id){
+  if(modoUsuario !== "admin"){
+    alert("Este acesso é somente para consulta.");
+    return;
+  }
+
+  const d = dados.find(x => String(x.id) === String(id));
+  if(!d) return;
+
+  editId = id;
+  ["data","hora","container","atividade","operador","solicitante","local"].forEach(k => {
+    document.getElementById(k).value = d[k];
+  });
+
+  document.getElementById("btnSalvar").textContent = "SALVAR ALTERAÇÃO";
+  scrollTo({top:0, behavior:"smooth"});
+}
+
+async function excluir(id){
+  if(modoUsuario !== "admin"){
+    alert("Este acesso é somente para consulta.");
+    return;
+  }
+
+  if(!confirm("Excluir esta movimentação?")) return;
+
+  removerLocal(id);
+  pendentes = pendentes.filter(p => String(p.id) !== String(id));
+  pendentesDelete = [...new Set([...pendentesDelete, String(id)])];
+  salvarPendentes();
+  salvarPendentesDelete();
+
+  setStatus("Firebase: excluindo...", "sync");
+
+  try{
+    const meio = await excluirFirebase(id);
+    pendentesDelete = pendentesDelete.filter(x => String(x) !== String(id));
+    salvarPendentesDelete();
+    setStatus(`Firebase: online (${meio})`, "ok");
+  }catch(e){
+    console.error("Erro ao excluir Firebase:", e);
+    setStatus("Firebase: exclusão pendente", "erro");
+    alert("Excluiu da tela e ficou pendente para sincronizar no Firebase.");
+  }
+}
+
+async function excluirMovimentacoesDoMes(){
+  if(modoUsuario !== "admin"){
+    alert("Este acesso é somente para consulta.");
+    return;
+  }
+
+  const mesSelecionado = document.getElementById("mes").value;
+  const registrosMes = dados.filter(d => mesDoItem(d) === mesSelecionado);
+
+  if(!registrosMes.length){
+    alert("Não existem movimentações neste mês.");
+    return;
+  }
+
+  if(!confirm(`Excluir ${registrosMes.length} movimentações do mês selecionado?`)) return;
+
+  for(const r of registrosMes){
+    removerLocal(r.id);
+    pendentes = pendentes.filter(p => String(p.id) !== String(r.id));
+    pendentesDelete = [...new Set([...pendentesDelete, String(r.id)])];
+  }
+
+  salvarPendentes();
+  salvarPendentesDelete();
+
+  await sincronizarBackupLocal(false);
+  alert("Movimentações do mês removidas. Se houver falha de internet, ficam pendentes para sincronizar.");
+}
+
+function exportCSV(){
+  const lista = filtrar();
+  if(!lista.length){
+    alert("Nada para exportar.");
+    return;
+  }
+
+  const cab = ["DATA","HORARIO","CONTAINER","ATIVIDADE","OPERADOR","CLIENTE","SOLICITANTE","LOCAL"];
+  const linhas = lista.map(d => [formataData(d.data),d.hora,d.container,d.atividade,d.operador,d.cliente||"CAMESA",d.solicitante,d.local]);
+  const csv = [cab,...linhas].map(r=>r.join(";")).join("\n");
+  const blob = new Blob(["\ufeff"+csv], {type:"text/csv;charset=utf-8;"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "movimentacoes_containers.csv";
+  a.click();
+}
+
+function imprimirRelatorio(){
+  resetarInatividade();
+  render();
+  setTimeout(()=>window.print(),100);
+}
+
+window.addEventListener("afterprint",()=>{
+  render();
+  resetarInatividade();
+});
+
+async function sincronizarBackupLocal(mostrarMensagem=true){
+  if(modoUsuario !== "admin"){
+    if(mostrarMensagem) alert("Este acesso é somente para consulta.");
+    return;
+  }
+
+  setStatus("Firebase: sincronizando backup...", "sync");
+
+  let ok = 0, erro = 0;
+  const restantes = [];
+
+  for(const item of pendentes){
+    try{
+      await salvarFirebase(item);
+      ok++;
+    }catch(e){
+      console.error(e);
+      erro++;
+      restantes.push(item);
+    }
+  }
+
+  pendentes = restantes;
+  salvarPendentes();
+
+  let okDel = 0, erroDel = 0;
+  const restantesDel = [];
+
+  for(const id of pendentesDelete){
+    try{
+      await excluirFirebase(id);
+      okDel++;
+    }catch(e){
+      console.error(e);
+      erroDel++;
+      restantesDel.push(id);
+    }
+  }
+
+  pendentesDelete = restantesDel;
+  salvarPendentesDelete();
+
+  if(erro === 0 && erroDel === 0){
+    setStatus("Firebase: backup sincronizado", "ok");
+    if(mostrarMensagem) alert(`Backup sincronizado. Salvos: ${ok}. Excluídos: ${okDel}.`);
+    setTimeout(()=>setStatus("Firebase: online","ok"),1500);
+    carregar();
+  }else{
+    setStatus("Firebase: erro ao sincronizar", "erro");
+    if(mostrarMensagem) alert(`Ainda ficou pendente. Salvos com erro: ${erro}. Exclusões com erro: ${erroDel}.`);
+  }
+}
+
+async function testarFirebaseDireto(){
+  if(modoUsuario !== "admin"){
+    alert("Este acesso é somente para consulta.");
+    return;
+  }
+
+  const id = "teste_botao_" + Date.now();
+  const teste = {
+    id,
+    data: new Date().toISOString().slice(0,10),
+    hora: new Date().toTimeString().slice(0,5),
+    container: "TESTE" + String(Date.now()).slice(-5),
+    atividade: "AJUSTE",
+    operador: "IVAIR",
+    cliente: "CAMESA",
+    solicitante: "TESTE",
+    local: "ITJ",
+    atualizadoEm: new Date().toISOString()
+  };
+
+  setStatus("Firebase: testando...", "sync");
+  try{
+    const meio = await salvarFirebase(teste);
+    alert("Teste salvo no Firebase com sucesso via " + meio + ". Veja a coleção movimentacoes_camesa.");
+    setStatus("Firebase: teste ok", "ok");
+    carregar();
+  }catch(e){
+    console.error(e);
+    setStatus("Firebase: teste falhou", "erro");
+    alert("Teste falhou: " + e.message);
+  }
+}
+
+function resetarInatividade(){
+  clearTimeout(tempoInatividade);
+  if(localStorage.getItem("logadoMov") !== "sim") return;
+
+  tempoInatividade = setTimeout(()=>{
+    localStorage.removeItem("logadoMov");
+    localStorage.removeItem(KEY_MODO);
+    document.getElementById("pass").value = "";
+    document.getElementById("loginErro").style.display = "none";
+    mostrarLogin();
+  }, TEMPO_MAXIMO);
+}
+
+["mousemove","mousedown","click","scroll","keypress","keydown","touchstart"].forEach(evento=>{
+  document.addEventListener(evento, resetarInatividade);
+});
+
+document.getElementById("hora").addEventListener("input", function(e){
+  let valor = e.target.value.replace(/\D/g,"");
+  if(valor.length > 2) valor = valor.substring(0,2) + ":" + valor.substring(2,4);
+  e.target.value = valor;
+});
+
+if(localStorage.getItem("logadoMov") === "sim"){
+  abrirApp();
+}else{
+  mostrarLogin();
+}
+
+window.login=login;
+window.sair=sair;
+window.salvar=salvar;
+window.limparForm=limparForm;
+window.aoMudarMes=aoMudarMes;
+window.setFiltro=setFiltro;
+window.imprimirRelatorio=imprimirRelatorio;
+window.exportCSV=exportCSV;
+window.sincronizarBackupLocal=sincronizarBackupLocal;
+window.excluirMovimentacoesDoMes=excluirMovimentacoesDoMes;
+window.editar=editar;
+window.excluir=excluir;
+window.render=render;
+window.testarFirebaseDireto=testarFirebaseDireto;
 </script>
 </body>
 </html>
