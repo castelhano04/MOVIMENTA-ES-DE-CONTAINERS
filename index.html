@@ -15,8 +15,8 @@ import {getFirestore,collection,getDocs,addDoc,doc,setDoc,deleteDoc} from 'https
 const firebaseConfig={apiKey:'AIzaSyD4TfY6Iwrju_aaG1vpN-q1Z9LyiDBeQvQ',authDomain:'estoque-app-13f1d.firebaseapp.com',projectId:'estoque-app-13f1d',storageBucket:'estoque-app-13f1d.appspot.com',messagingSenderId:'193095930583',appId:'1:193095930583:web:88587ee9f4e10076619692',measurementId:'G-Y99TQTKNRG'};
 const db=getFirestore(initializeApp(firebaseConfig));const COLECAO='movimentacoes_camesa';
 const SENHA_ADMIN='161004',SENHA_CONSULTA='123',SENHA_TEMP='2704';
-// Janela inclusiva: 19/10/2026 00:00 até 22/11/2026 23:59:59 no fuso de Brasília.
-const TEMP_INICIO=Date.parse('2026-10-19T00:00:00-03:00');const TEMP_FIM=Date.parse('2026-11-23T00:00:00-03:00');
+// Acesso liberado para teste desde 16/10/2026, expira em 23/11/2026 00:00 no horário de Brasília.
+const TEMP_INICIO=Date.parse('2026-10-16T00:00:00-03:00');const TEMP_FIM=Date.parse('2026-11-23T00:00:00-03:00');
 const KEY_DADOS='movContainersCamesa',KEY_PEND='movContainersCamesaPendentes',KEY_DEL='movContainersCamesaPendentesDelete';
 const $=id=>document.getElementById(id);const read=(key,def=[])=>{try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(def))}catch{return def}};const write=(key,v)=>localStorage.setItem(key,JSON.stringify(v));
 let dados=read(KEY_DADOS),pendentes=read(KEY_PEND),deletados=read(KEY_DEL),modo=sessionStorage.getItem('movModo')||'',editId=null,filtro='TODOS',timer=null,carregando=false;
