@@ -1,167 +1,47 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Movimentações de Containers</title>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Movimentações de Containers - CAMESA</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f1f3f6;color:#111}
-body.boot .login,body.boot .app{display:none!important}
-.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#111,#28384d)}
-.login-box{background:#fff;width:360px;max-width:92%;padding:28px;border-radius:14px;box-shadow:0 10px 30px #0005;text-align:center}
-.login-box h1{font-size:22px;margin:0 0 8px}.login-box p{margin:0 0 20px;color:#666}
-.login-box input{width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}
-.login-box button,.btn{border:none;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;background:#111;color:#fff}
-.login-box button{width:100%;margin-top:8px}.app{display:none}
-.top{background:#111;color:#fff;padding:18px 22px;position:relative;text-align:center}
-.top h1{font-size:26px;margin:0;font-weight:900;text-transform:uppercase;letter-spacing:.5px}
-.top .sair-top{position:absolute;right:18px;top:50%;transform:translateY(-50%)}
-.wrap{padding:18px;max-width:1400px;margin:auto}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
-.card{background:#fff;border-radius:10px;padding:14px;box-shadow:0 2px 8px #0001}.card b{font-size:24px}.card small{display:block;color:#666;margin-top:4px}
-.panel{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #0001}.panel h2{margin:0 0 14px;font-size:18px}
-.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.form input,.form select{padding:11px;border:1px solid #bbb;border-radius:8px;font-size:15px;text-transform:uppercase}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.green{background:#1d7f38}.btn.blue{background:#0b5ed7}.btn.red{background:#b42318}.btn.gray{background:#555}
-.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.filters input,.filters select{padding:10px;border:1px solid #bbb;border-radius:8px;font-size:15px}
-.chip{border:1px solid #111;background:#fff;color:#111;border-radius:999px;padding:9px 18px;font-weight:bold;cursor:pointer}.chip.active{background:#111;color:#fff}
-.table-area{overflow:auto;background:#fff;border-radius:12px;box-shadow:0 2px 8px #0001}.title-table{text-align:center;font-weight:900;font-size:22px;padding:10px;border:1px solid #000;border-bottom:none;background:#fff;text-transform:uppercase}
-table{width:100%;border-collapse:collapse;background:#fff;min-width:900px}th,td{border:1px solid #000;padding:7px;text-align:center;font-size:14px;height:34px}th{font-weight:900;background:#f7f7f7}
-td button{padding:5px 8px;border:none;border-radius:5px;cursor:pointer}.edit{background:#ffc107}.del{background:#dc3545;color:#fff}.muted{color:#777;font-size:13px;margin-top:8px}.print-only{display:none}
-.linha-sp{background:#ffd6d6}.local-itj{color:#0b5ed7;font-weight:bold}.local-sp{color:#c00000;font-weight:bold}
-#mes{background:#111;color:#fff;border:none;font-weight:bold;padding:12px 16px;border-radius:10px;cursor:pointer}
-body.modo-consulta .admin-only{display:none!important}body.modo-consulta .no-print-col{display:none!important}
-.badge-modo{font-size:12px;font-weight:bold;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#1d4ed8;display:inline-block}
-.status{font-size:12px;font-weight:bold;padding:6px 10px;border-radius:999px;background:#fff3cd;color:#8a5a00;display:inline-block}.status.ok{background:#e9f7ef;color:#1d7f38}.status.erro{background:#ffe2e2;color:#b42318}.status.sync{background:#fff3cd;color:#8a5a00}
-@media print{@page{size:A4 portrait;margin:8mm}body{background:#fff}.top,.panel,.cards,.actions-not-print,.no-print{display:none!important}.wrap{padding:0;max-width:none;width:100%}.table-area{box-shadow:none;border-radius:0;overflow:visible;width:100%;border:1px solid #000;background:#fff}.title-table{font-size:20px;padding:9px 6px;border:none;border-bottom:1px solid #000;text-align:center;font-weight:900;text-transform:uppercase;letter-spacing:.3px}table{width:100%;min-width:0;border-collapse:collapse}th,td{font-size:12.5px;padding:5px 4px;height:27px;border:1px solid #000;text-align:center}th{font-size:12px;font-weight:900}.no-print-col{display:none!important}.print-only{display:none!important}.linha-sp{background:#fff!important}.local-itj,.local-sp{color:#000!important}}
-</style>
-</head>
-<body class="boot">
-<div class="login" id="loginScreen"><div class="login-box"><h1>Sistema de Movimentações</h1><p>Containers - CAMESA</p><input id="pass" placeholder="Senha" type="password" autofocus><button onclick="login()">ENTRAR</button><p id="loginErro" style="color:#b42318;margin-top:12px;display:none">Senha incorreta</p></div></div>
-<div class="app" id="app"><div class="top"><h1>MOVIMENTAÇÕES DE CONTAINERS</h1><button class="btn red sair-top" onclick="sair()">SAIR</button></div><div class="wrap">
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f1f3f6;color:#111}.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#111,#28384d)}.login-box{background:white;width:360px;max-width:92%;padding:28px;border-radius:14px;box-shadow:0 10px 30px #0005;text-align:center}.login-box h1{font-size:22px;margin:0 0 8px}.login-box p{color:#666}.login-box input{width:100%;padding:13px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px}.btn,.login-box button{border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer;background:#111;color:#fff}.login-box button{width:100%}.app{display:none}.top{background:#111;color:white;padding:18px 22px;position:relative;text-align:center}.top h1{font-size:26px;margin:0;font-weight:900}.sair-top{position:absolute;right:18px;top:50%;transform:translateY(-50%)}.wrap{padding:18px;max-width:1400px;margin:auto}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}.card,.panel{background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px #0001}.card b{font-size:24px}.card small{display:block;color:#666;margin-top:4px}.panel{margin-bottom:16px}.panel h2{margin:0 0 14px;font-size:18px}.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.form input,.form select,.filters input,.filters select{padding:11px;border:1px solid #bbb;border-radius:8px;font-size:15px}.form input:not([type=date]),.form select{text-transform:uppercase}.actions,.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.actions{margin-top:12px}.green{background:#1d7f38}.blue{background:#0b5ed7}.red{background:#b42318}.gray{background:#555}.chip{border:1px solid #111;background:white;color:#111;border-radius:999px;padding:9px 18px;font-weight:bold;cursor:pointer}.chip.active{background:#111;color:white}.table-area{overflow:auto;background:white;border-radius:12px;box-shadow:0 2px 8px #0001}.title-table{text-align:center;font-weight:900;font-size:22px;padding:10px;border:1px solid black;border-bottom:none}table{width:100%;border-collapse:collapse;min-width:900px}th,td{border:1px solid #000;padding:7px;text-align:center;font-size:14px;height:34px}th{background:#f7f7f7}td button{padding:5px 8px;border:0;border-radius:5px;cursor:pointer}.edit{background:#ffc107}.del{background:#dc3545;color:white}.muted{color:#777;font-size:13px;margin-top:8px}.linha-sp{background:#ffd6d6}.local-itj{color:#0b5ed7;font-weight:bold}.local-sp{color:#c00000;font-weight:bold}.badge-modo,.status{font-size:12px;font-weight:bold;padding:6px 10px;border-radius:999px;background:#eef2ff;color:#1d4ed8;display:inline-block}.status.ok{background:#e9f7ef;color:#1d7f38}.status.erro{background:#ffe2e2;color:#b42318}.status.sync{background:#fff3cd;color:#8a5a00}.modo-consulta .admin-only,.modo-consulta .no-print-col{display:none!important}#mes{background:#111;color:#fff;border:0;font-weight:bold}.temp-info{margin-top:8px;font-size:13px;color:#8a5a00}@media(max-width:650px){.top h1{font-size:18px;padding-right:65px}.sair-top{right:5px;padding:9px}.wrap{padding:10px}}@media print{@page{size:A4 portrait;margin:8mm}body{background:white}.top,.panel,.cards,.no-print-col{display:none!important}.wrap{padding:0;max-width:none}.table-area{box-shadow:none;overflow:visible}.title-table{font-size:18px}table{min-width:0}th,td{font-size:11px;padding:4px}.linha-sp{background:white!important}.local-itj,.local-sp{color:black!important}}
+</style></head><body>
+<div class="login" id="loginScreen"><div class="login-box"><h1>Sistema de Movimentações</h1><p>Containers - CAMESA</p><input id="pass" type="password" placeholder="Senha" autofocus><button id="entrar">ENTRAR</button><p id="loginErro" style="display:none;color:#b42318">Senha incorreta ou acesso expirado.</p></div></div>
+<div class="app" id="app"><div class="top"><h1>MOVIMENTAÇÕES DE CONTAINERS</h1><button class="btn red sair-top" id="sair">SAIR</button></div><div class="wrap">
 <div class="cards"><div class="card"><b id="totalMes">0</b><small>Total do mês</small></div><div class="card"><b id="totalItj">0</b><small>ITJ</small></div><div class="card"><b id="totalSp">0</b><small>SP</small></div><div class="card"><b id="totalBaixa">0</b><small>Baixas</small></div><div class="card"><b id="totalAjuste">0</b><small>Ajustes</small></div><div class="card"><b id="totalSaida">0</b><small>Saídas</small></div></div>
-<div class="panel no-print admin-only" id="cadastroPanel"><h2>Cadastrar movimentação</h2><div class="form"><input type="date" id="data"><input type="text" id="hora" placeholder="Ex: 08:15" maxlength="5"><input id="container" placeholder="Container"><select id="atividade"><option>AJUSTE</option><option>BAIXA</option><option>SAÍDA</option></select><select id="operador"><option value="IVAIR">IVAIR</option><option value="EDIMILSON">EDIMILSON</option></select><input id="solicitante" placeholder="Solicitante"><select id="local"><option>ITJ</option><option>SP</option></select></div><div class="actions"><button class="btn green" onclick="salvar()" id="btnSalvar">SALVAR MOVIMENTAÇÃO</button><button class="btn gray" onclick="limparForm()">LIMPAR</button></div><div class="muted">Cliente será salvo automaticamente como CAMESA. Salva no Firebase e mantém backup local.</div></div>
-<div class="panel no-print"><h2>Filtros e busca <span class="badge-modo" id="badgeModo">Modo</span> <span class="status" id="statusFirebase">Firebase: aguardando</span></h2><div class="filters"><select id="mes" onchange="aoMudarMes()"></select><button class="chip active" id="fTodos" onclick="setFiltro('TODOS')">TODOS</button><button class="chip" id="fITJ" onclick="setFiltro('ITJ')">ITJ</button><button class="chip" id="fSP" onclick="setFiltro('SP')">SP</button><input id="busca" placeholder="Pesquisar container" oninput="render()"><button class="btn blue" onclick="imprimirRelatorio()">IMPRIMIR RELATÓRIO</button><button class="btn green admin-only" onclick="exportCSV()">EXPORTAR EXCEL/CSV</button><button class="btn blue admin-only" onclick="sincronizarBackupLocal()">SINCRONIZAR BACKUP</button><button class="btn red admin-only" onclick="excluirMovimentacoesDoMes()">EXCLUIR MOVIMENTAÇÕES DO MÊS</button></div><div class="muted">A busca mostra o container pesquisado e todas as movimentações dele no mês selecionado.</div></div>
-<div class="table-area"><div class="title-table" id="tituloTabela">CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS</div><div class="print-only" id="subPrint"></div><table><thead><tr><th>DATA</th><th>HORÁRIO</th><th>CONTAINERS</th><th>ATIVIDADE</th><th>OPERADOR</th><th>CLIENTE</th><th>SOLICITANTE</th><th>LOCAL</th><th class="no-print-col">AÇÕES</th></tr></thead><tbody id="tbody"></tbody></table></div>
-</div></div>
+<div class="panel admin-only"><h2>Cadastrar movimentação</h2><div class="form"><input type="date" id="data"><input id="hora" placeholder="Ex: 08:15" maxlength="5"><input id="container" placeholder="Container"><select id="atividade"><option>AJUSTE</option><option>BAIXA</option><option>SAÍDA</option></select><select id="operador"><option>IVAIR</option><option>EDIMILSON</option></select><input id="solicitante" placeholder="Solicitante"><select id="local"><option>ITJ</option><option>SP</option></select></div><div class="actions"><button class="btn green" id="btnSalvar">SALVAR MOVIMENTAÇÃO</button><button class="btn gray" id="limpar">LIMPAR</button></div><div class="muted">Cliente: CAMESA. Os dados são enviados ao Firebase, com backup local quando não houver conexão.</div><div class="temp-info" id="avisoTemporario" hidden>Acesso temporário válido até 22/11/2026, 23h59 (Brasília).</div></div>
+<div class="panel"><h2>Filtros e busca <span class="badge-modo" id="badgeModo"></span> <span class="status" id="statusFirebase">Firebase: aguardando</span></h2><div class="filters"><select id="mes"></select><button class="chip active" id="fTODOS">TODOS</button><button class="chip" id="fITJ">ITJ</button><button class="chip" id="fSP">SP</button><input id="busca" placeholder="Pesquisar container"><button class="btn blue" id="imprimir">IMPRIMIR RELATÓRIO</button><button class="btn green admin-only" id="exportar">EXPORTAR EXCEL/CSV</button><button class="btn blue admin-only" id="sincronizar">SINCRONIZAR BACKUP</button><button class="btn red admin-only" id="excluirMes">EXCLUIR MOVIMENTAÇÕES DO MÊS</button></div><div class="muted">A busca mostra todas as movimentações do container no mês selecionado.</div></div>
+<div class="table-area"><div class="title-table">CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS</div><table><thead><tr><th>DATA</th><th>HORÁRIO</th><th>CONTAINERS</th><th>ATIVIDADE</th><th>OPERADOR</th><th>CLIENTE</th><th>SOLICITANTE</th><th>LOCAL</th><th class="no-print-col">AÇÕES</th></tr></thead><tbody id="tbody"></tbody></table></div></div></div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig={apiKey:"AIzaSyD4TfY6Iwrju_aaG1vpN-q1Z9LyiDBeQvQ",authDomain:"estoque-app-13f1d.firebaseapp.com",projectId:"estoque-app-13f1d",storageBucket:"estoque-app-13f1d.appspot.com",messagingSenderId:"193095930583",appId:"1:193095930583:web:88587ee9f4e10076619692",measurementId:"G-Y99TQTKNRG"}
-const appFirebase=initializeApp(firebaseConfig);
-const db=getFirestore(appFirebase);
-const COLECAO='movimentacoes_camesa';
-const SENHA_ADMIN='161004',SENHA_CONSULTA='123';
-const KEY_DADOS='movContainersCamesa',KEY_PENDENTES='movContainersCamesaPendentes',KEY_DEL='movContainersCamesaPendentesDelete',KEY_MODO='modoUsuarioMov';
-let dados=carregarLocal();
-let pendentes=carregarPendentes();
-let pendentesDelete=carregarPendentesDelete();
-let filtroLocal='TODOS',editId=null,tempoInatividade=null,modoUsuario=localStorage.getItem(KEY_MODO)||'';
-const TEMPO_MAXIMO=3*60*1000;
-const mesesNome=['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
-
-function carregarLocal(){try{return JSON.parse(localStorage.getItem(KEY_DADOS)||'[]')}catch(e){return[]}}
-function salvarLocal(){localStorage.setItem(KEY_DADOS,JSON.stringify(dados))}
-function carregarPendentes(){try{return JSON.parse(localStorage.getItem(KEY_PENDENTES)||'[]')}catch(e){return[]}}
-function salvarPendentes(){localStorage.setItem(KEY_PENDENTES,JSON.stringify(pendentes))}
-function carregarPendentesDelete(){try{return JSON.parse(localStorage.getItem(KEY_DEL)||'[]')}catch(e){return[]}}
-function salvarPendentesDelete(){localStorage.setItem(KEY_DEL,JSON.stringify(pendentesDelete))}
-function setStatus(txt,tipo='sync'){const el=document.getElementById('statusFirebase');if(!el)return;el.textContent=txt;el.className='status '+tipo}
-function unirPorId(lista){const mapa={};lista.forEach(i=>{if(i&&i.id)mapa[String(i.id)]=i});return Object.values(mapa)}
-function atualizarLocal(obj){dados=unirPorId([...dados,obj]);salvarLocal();render()}
-function removerLocal(id){dados=dados.filter(d=>String(d.id)!==String(id));salvarLocal();render()}
-function aplicarModo(){modoUsuario=localStorage.getItem(KEY_MODO)||'';document.body.classList.toggle('modo-consulta',modoUsuario==='consulta');const badge=document.getElementById('badgeModo');if(badge){if(modoUsuario==='admin'){badge.textContent='ADM';badge.style.background='#dcfce7';badge.style.color='#166534'}else{badge.textContent='CONSULTA';badge.style.background='#dbeafe';badge.style.color='#1d4ed8'}}render()}
-function login(){const pass=document.getElementById('pass').value;if(pass===SENHA_ADMIN){localStorage.setItem('logadoMov','sim');localStorage.setItem(KEY_MODO,'admin');document.getElementById('loginErro').style.display='none';abrirApp();return}if(pass===SENHA_CONSULTA){localStorage.setItem('logadoMov','sim');localStorage.setItem(KEY_MODO,'consulta');document.getElementById('loginErro').style.display='none';abrirApp();return}document.getElementById('loginErro').style.display='block'}
-function sair(){localStorage.removeItem('logadoMov');localStorage.removeItem(KEY_MODO);location.reload()}
-function abrirApp(){document.body.classList.remove('boot');document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';aplicarModo();init();resetarInatividade()}
-function mostrarLogin(){document.body.classList.remove('boot');document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('pass').value='';document.getElementById('pass').focus()}
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginScreen').style.display!=='none')login()});
-function init(){const hoje=new Date();document.getElementById('data').value=hoje.toISOString().slice(0,10);document.getElementById('hora').value=hoje.toTimeString().slice(0,5);const op=localStorage.getItem('ultimoOperador');document.getElementById('operador').value=(op==='EDIMILSON'||op==='IVAIR')?op:'IVAIR';document.getElementById('solicitante').value=localStorage.getItem('ultimoSolicitante')||'ANDERSON';montarMeses();carregar()}
-async function carregar(){dados=carregarLocal();render();setStatus('Firebase: carregando...','sync');try{const snap=await getDocs(collection(db,COLECAO));const firebaseDados=[];snap.forEach(docu=>firebaseDados.push({id:docu.id,...docu.data()}));dados=unirPorId([...dados,...firebaseDados]);salvarLocal();render();setStatus('Firebase: online','ok');if(modoUsuario==='admin'&&(pendentes.length||pendentesDelete.length))sincronizarBackupLocal(false)}catch(e){console.error('Erro ao carregar Firebase:',e);setStatus('Firebase: backup local','erro')}}
-function montarMeses(){const sel=document.getElementById('mes');sel.innerHTML='';const anoAtual=new Date().getFullYear();const mesAtual=new Date().getMonth()+1;for(let m=1;m<=12;m++){const v=`${anoAtual}-${String(m).padStart(2,'0')}`;const op=document.createElement('option');op.value=v;op.textContent=`${mesesNome[m-1]} / ${anoAtual}`;sel.appendChild(op)}const salvo=localStorage.getItem('mesSelecionadoMov');sel.value=salvo&&salvo.startsWith(String(anoAtual))?salvo:`${anoAtual}-${String(mesAtual).padStart(2,'0')}`}
-function aoMudarMes(){localStorage.setItem('mesSelecionadoMov',document.getElementById('mes').value);render()}
-function setFiltro(f){filtroLocal=f;['TODOS','ITJ','SP'].forEach(x=>{const botao=document.getElementById('f'+x);if(botao)botao.classList.toggle('active',x===f)});render()}
-async function salvar(){
-  if(modoUsuario!=='admin'){
-    alert('Este acesso é somente para consulta.');
-    return;
-  }
-
-  const obj={
-    data:document.getElementById('data').value,
-    hora:document.getElementById('hora').value,
-    container:document.getElementById('container').value.trim().toUpperCase(),
-    atividade:document.getElementById('atividade').value,
-    operador:document.getElementById('operador').value.trim().toUpperCase(),
-    cliente:'CAMESA',
-    solicitante:document.getElementById('solicitante').value.trim().toUpperCase(),
-    local:document.getElementById('local').value,
-    atualizadoEm:new Date().toISOString()
-  };
-
-  if(!obj.data||!obj.hora||!obj.container||!obj.operador||!obj.solicitante){
-    alert('Preencha data, horário, container, operador e solicitante.');
-    return;
-  }
-
-  localStorage.setItem('ultimoOperador',obj.operador);
-  localStorage.setItem('ultimoSolicitante',obj.solicitante);
-  setStatus('Firebase: salvando...','sync');
-
-  try{
-    if(editId){
-      obj.id = String(editId);
-      await setDoc(doc(db,COLECAO,String(editId)),obj,{merge:true});
-    }else{
-      const ref = await addDoc(collection(db,COLECAO),obj);
-      obj.id = ref.id;
-    }
-
-    atualizarLocal(obj);
-    pendentes=pendentes.filter(p=>String(p.id)!==String(obj.id));
-    salvarPendentes();
-    editId=null;
-    document.getElementById('btnSalvar').textContent='SALVAR MOVIMENTAÇÃO';
-    limparForm(false);
-    setStatus('Firebase: salvo','ok');
-    setTimeout(()=>setStatus('Firebase: online','ok'),1200);
-    await carregar();
-  }catch(e){
-    console.error('Erro ao salvar Firebase:',e);
-
-    // Backup local só se o Firebase falhar
-    const backupObj = {...obj, id: editId || String(Date.now())};
-    atualizarLocal(backupObj);
-    pendentes=unirPorId([...pendentes,backupObj]);
-    salvarPendentes();
-    editId=null;
-    document.getElementById('btnSalvar').textContent='SALVAR MOVIMENTAÇÃO';
-    limparForm(false);
-    setStatus('Firebase: backup local','erro');
-    alert('Não consegui salvar no Firebase agora. Ficou no backup local. Clique em SINCRONIZAR BACKUP depois.');
-  }
-}
-function limparForm(clear=true){editId=null;document.getElementById('btnSalvar').textContent='SALVAR MOVIMENTAÇÃO';document.getElementById('container').value='';if(clear){document.getElementById('operador').value='IVAIR';document.getElementById('solicitante').value='ANDERSON'}document.getElementById('container').focus()}
-function mesDoItem(d){return d.data?d.data.slice(0,7):''}
-function filtrar(){const mes=document.getElementById('mes').value;const busca=document.getElementById('busca').value.trim().toUpperCase();return dados.filter(d=>mesDoItem(d)===mes).filter(d=>filtroLocal==='TODOS'||d.local===filtroLocal).filter(d=>!busca||String(d.container||'').includes(busca)).sort((a,b)=>(a.data+a.hora).localeCompare(b.data+b.hora))}
-function render(){const mes=document.getElementById('mes')?.value;if(!mes)return;document.getElementById('tituloTabela').textContent='CONTROLE DE MOVIMENTAÇÕES DOS CONTAINERS';document.getElementById('subPrint').textContent='';const mesDados=dados.filter(d=>mesDoItem(d)===mes);document.getElementById('totalMes').textContent=mesDados.length;document.getElementById('totalItj').textContent=mesDados.filter(d=>d.local==='ITJ').length;document.getElementById('totalSp').textContent=mesDados.filter(d=>d.local==='SP').length;document.getElementById('totalBaixa').textContent=mesDados.filter(d=>d.atividade==='BAIXA').length;document.getElementById('totalAjuste').textContent=mesDados.filter(d=>d.atividade==='AJUSTE').length;document.getElementById('totalSaida').textContent=mesDados.filter(d=>d.atividade==='SAÍDA').length;const lista=filtrar();const tbody=document.getElementById('tbody');tbody.innerHTML='';lista.forEach(d=>tbody.appendChild(linha(d)));const linhasVazias=Math.max(20-lista.length,0);for(let i=0;i<linhasVazias;i++){const tr=document.createElement('tr');tr.innerHTML='<td></td><td></td><td></td><td></td><td></td><td>CAMESA</td><td></td><td></td><td class="no-print-col"></td>';tbody.appendChild(tr)}}
-function formataData(dt){if(!dt)return'';const[a,m,d]=dt.split('-');return`${d}/${m}/${String(a).slice(2)}`}
-function linha(d){const tr=document.createElement('tr');if(d.local==='SP')tr.classList.add('linha-sp');const classeLocal=d.local==='SP'?'local-sp':'local-itj';const acoes=modoUsuario==='admin'?`<td class="no-print-col"><button class="edit" onclick="editar('${d.id}')">Editar</button> <button class="del" onclick="excluir('${d.id}')">Excluir</button></td>`:`<td class="no-print-col"></td>`;tr.innerHTML=`<td>${formataData(d.data)}</td><td>${d.hora}</td><td>${d.container}</td><td>${d.atividade}</td><td>${d.operador}</td><td>${d.cliente||'CAMESA'}</td><td>${d.solicitante}</td><td class="${classeLocal}">${d.local}</td>${acoes}`;return tr}
-function editar(id){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}const d=dados.find(x=>String(x.id)===String(id));if(!d)return;editId=id;['data','hora','container','atividade','operador','solicitante','local'].forEach(k=>document.getElementById(k).value=d[k]);document.getElementById('btnSalvar').textContent='SALVAR ALTERAÇÃO';scrollTo({top:0,behavior:'smooth'})}
-async function excluir(id){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}if(!confirm('Excluir esta movimentação?'))return;removerLocal(id);pendentes=pendentes.filter(p=>String(p.id)!==String(id));pendentesDelete=[...new Set([...pendentesDelete,String(id)])];salvarPendentes();salvarPendentesDelete();setStatus('Firebase: excluindo...','sync');try{await deleteDoc(doc(db,COLECAO,String(id)));pendentesDelete=pendentesDelete.filter(x=>String(x)!==String(id));salvarPendentesDelete();setStatus('Firebase: online','ok')}catch(e){console.error('Erro ao excluir Firebase:',e);setStatus('Firebase: exclusão pendente','erro');alert('Excluiu da tela e ficou pendente para sincronizar no Firebase.')}}
-async function excluirMovimentacoesDoMes(){if(modoUsuario!=='admin'){alert('Este acesso é somente para consulta.');return}const mesSelecionado=document.getElementById('mes').value;const registrosMes=dados.filter(d=>mesDoItem(d)===mesSelecionado);if(!registrosMes.length){alert('Não existem movimentações neste mês.');return}if(!confirm(`Excluir ${registrosMes.length} movimentações do mês selecionado?`))return;for(const r of registrosMes){removerLocal(r.id);pendentesDelete=[...new Set([...pendentesDelete,String(r.id)])]}salvarPendentesDelete();await sincronizarBackupLocal(false);alert('Movimentações do mês removidas. Se houver falha de internet, ficam pendentes para sincronizar.')}
-function exportCSV(){const lista=filtrar();if(!lista.length){alert('Nada para exportar.');return}const cab=['DATA','HORARIO','CONTAINER','ATIVIDADE','OPERADOR','CLIENTE','SOLICITANTE','LOCAL'];const linhas=lista.map(d=>[formataData(d.data),d.hora,d.container,d.atividade,d.operador,d.cliente||'CAMESA',d.solicitante,d.local]);const csv=[cab,...linhas].map(r=>r.join(';')).join('\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='movimentacoes_containers.csv';a.click()}
-function imprimirRelatorio(){resetarInatividade();render();setTimeout(()=>window.print(),100)}
-window.addEventListener('afterprint',()=>{render();resetarInatividade()});
-async function sincronizarBackupLocal(mostrarMensagem=true){if(modoUsuario!=='admin'){if(mostrarMensagem)alert('Este acesso é somente para consulta.');return}setStatus('Firebase: sincronizando backup...','sync');let ok=0,erro=0;for(const item of pendentes){try{await setDoc(doc(db,COLECAO,String(item.id)),item);ok++}catch(e){console.error(e);erro++}}if(erro===0){pendentes=[];salvarPendentes()}let okDel=0,erroDel=0;for(const id of pendentesDelete){try{await deleteDoc(doc(db,COLECAO,String(id)));okDel++}catch(e){console.error(e);erroDel++}}if(erroDel===0){pendentesDelete=[];salvarPendentesDelete()}if(erro===0&&erroDel===0){setStatus('Firebase: backup sincronizado','ok');if(mostrarMensagem)alert(`Backup sincronizado. Salvos: ${ok}. Excluídos: ${okDel}.`);setTimeout(()=>setStatus('Firebase: online','ok'),1500)}else{setStatus('Firebase: erro ao sincronizar','erro');if(mostrarMensagem)alert(`Ainda ficou pendente. Salvos com erro: ${erro}. Exclusões com erro: ${erroDel}.`)}}
-function resetarInatividade(){clearTimeout(tempoInatividade);if(localStorage.getItem('logadoMov')!=='sim')return;tempoInatividade=setTimeout(()=>{localStorage.removeItem('logadoMov');localStorage.removeItem(KEY_MODO);document.getElementById('pass').value='';document.getElementById('loginErro').style.display='none';mostrarLogin()},TEMPO_MAXIMO)}
-['mousemove','mousedown','click','scroll','keypress','keydown','touchstart'].forEach(evento=>document.addEventListener(evento,resetarInatividade));
-document.getElementById('hora').addEventListener('input',function(e){let valor=e.target.value.replace(/\D/g,'');if(valor.length>2)valor=valor.substring(0,2)+':'+valor.substring(2,4);e.target.value=valor});
-if(localStorage.getItem('logadoMov')==='sim')abrirApp();else mostrarLogin();
-
-window.login=login;window.sair=sair;window.salvar=salvar;window.limparForm=limparForm;window.aoMudarMes=aoMudarMes;window.setFiltro=setFiltro;window.imprimirRelatorio=imprimirRelatorio;window.exportCSV=exportCSV;window.sincronizarBackupLocal=sincronizarBackupLocal;window.excluirMovimentacoesDoMes=excluirMovimentacoesDoMes;window.editar=editar;window.excluir=excluir;window.render=render;
-</script>
-</body>
-</html>
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {getFirestore,collection,getDocs,addDoc,doc,setDoc,deleteDoc} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+const firebaseConfig={apiKey:'AIzaSyD4TfY6Iwrju_aaG1vpN-q1Z9LyiDBeQvQ',authDomain:'estoque-app-13f1d.firebaseapp.com',projectId:'estoque-app-13f1d',storageBucket:'estoque-app-13f1d.appspot.com',messagingSenderId:'193095930583',appId:'1:193095930583:web:88587ee9f4e10076619692',measurementId:'G-Y99TQTKNRG'};
+const db=getFirestore(initializeApp(firebaseConfig));const COLECAO='movimentacoes_camesa';
+const SENHA_ADMIN='161004',SENHA_CONSULTA='123',SENHA_TEMP='2704';
+// Janela inclusiva: 19/10/2026 00:00 até 22/11/2026 23:59:59 no fuso de Brasília.
+const TEMP_INICIO=Date.parse('2026-10-19T00:00:00-03:00');const TEMP_FIM=Date.parse('2026-11-23T00:00:00-03:00');
+const KEY_DADOS='movContainersCamesa',KEY_PEND='movContainersCamesaPendentes',KEY_DEL='movContainersCamesaPendentesDelete';
+const $=id=>document.getElementById(id);const read=(key,def=[])=>{try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(def))}catch{return def}};const write=(key,v)=>localStorage.setItem(key,JSON.stringify(v));
+let dados=read(KEY_DADOS),pendentes=read(KEY_PEND),deletados=read(KEY_DEL),modo=sessionStorage.getItem('movModo')||'',editId=null,filtro='TODOS',timer=null,carregando=false;
+const unico=a=>[...new Map(a.filter(x=>x?.id).map(x=>[String(x.id),x])).values()];const podeEditar=()=>modo==='admin'||modo==='temporario';const tempValido=()=>Date.now()>=TEMP_INICIO&&Date.now()<TEMP_FIM;const permitido=()=>modo==='admin'||modo==='consulta'||(modo==='temporario'&&tempValido());
+function status(t,c='sync'){$('statusFirebase').textContent=t;$('statusFirebase').className='status '+c}
+function salvarLocal(){write(KEY_DADOS,dados)}function guardarPendentes(){write(KEY_PEND,pendentes);write(KEY_DEL,deletados)}
+function sair(){sessionStorage.removeItem('movModo');modo='';clearTimeout(timer);$('app').style.display='none';$('loginScreen').style.display='flex';$('pass').value='';$('loginErro').style.display='none'}
+function verificar(){if(!permitido()){sair();return false}return true}
+function login(){const p=$('pass').value;let m=p===SENHA_ADMIN?'admin':p===SENHA_CONSULTA?'consulta':p===SENHA_TEMP&&tempValido()?'temporario':'';if(!m){$('loginErro').style.display='block';return}modo=m;sessionStorage.setItem('movModo',modo);abrir()}
+function abrir(){if(!verificar())return;$('loginScreen').style.display='none';$('app').style.display='block';document.body.classList.toggle('modo-consulta',modo==='consulta');$('badgeModo').textContent=modo==='admin'?'ADMIN':modo==='temporario'?'ADMIN TEMPORÁRIO':'CONSULTA';$('avisoTemporario').hidden=modo!=='temporario';montarMeses();inicializarForm();render();carregar();resetarInatividade()}
+function resetarInatividade(){if(!modo)return;clearTimeout(timer);timer=setTimeout(sair,3*60*1000)}
+['mousemove','mousedown','click','scroll','keypress','keydown','touchstart'].forEach(e=>document.addEventListener(e,resetarInatividade));setInterval(()=>{if(modo==='temporario'&&!tempValido()){alert('O acesso temporário expirou.');sair()}},15000);
+function inicializarForm(){const n=new Date();$('data').value=[n.getFullYear(),String(n.getMonth()+1).padStart(2,'0'),String(n.getDate()).padStart(2,'0')].join('-');$('hora').value=n.toTimeString().slice(0,5);$('operador').value=localStorage.getItem('ultimoOperador')||'IVAIR';$('solicitante').value=localStorage.getItem('ultimoSolicitante')||'ANDERSON'}
+function montarMeses(){const sel=$('mes'),atual=new Date(),ano=atual.getFullYear(),meses=['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];const anos=new Set([ano,2026,...dados.map(d=>Number((d.data||'').slice(0,4))).filter(Boolean)]);sel.replaceChildren();[...anos].sort((a,b)=>b-a).forEach(a=>meses.forEach((nome,i)=>{const op=document.createElement('option');op.value=`${a}-${String(i+1).padStart(2,'0')}`;op.textContent=`${nome} / ${a}`;sel.append(op)}));const salvo=localStorage.getItem('mesSelecionadoMov'),padrao=`${ano}-${String(atual.getMonth()+1).padStart(2,'0')}`;sel.value=[...sel.options].some(x=>x.value===salvo)?salvo:padrao}
+async function carregar(){if(carregando||!verificar())return;carregando=true;status('Firebase: carregando...');try{const snap=await getDocs(collection(db,COLECAO));const remoto=[];snap.forEach(s=>remoto.push({id:s.id,...s.data()}));const excluirIds=new Set(deletados.map(String));dados=unico([...dados,...remoto,...pendentes]).filter(x=>!excluirIds.has(String(x.id)));salvarLocal();render();status('Firebase: online','ok');if(podeEditar()&&(pendentes.length||deletados.length))await sincronizar(false)}catch(e){console.error(e);status('Firebase: backup local','erro')}finally{carregando=false}}
+function mesItem(d){return(d.data||'').slice(0,7)}function filtrar(){const mes=$('mes').value,busca=$('busca').value.trim().toUpperCase();return dados.filter(d=>mesItem(d)===mes&&(filtro==='TODOS'||d.local===filtro)&&(!busca||String(d.container||'').toUpperCase().includes(busca))).sort((a,b)=>((a.data||'')+(a.hora||'')).localeCompare((b.data||'')+(b.hora||'')))}
+function fmtData(s){if(!s)return'';const[a,m,d]=s.split('-');return`${d}/${m}/${String(a).slice(2)}`}
+function cell(tr,value,classe=''){const td=document.createElement('td');td.textContent=value??'';if(classe)td.className=classe;tr.append(td);return td}
+function render(){if(!$('mes').value)return;const m=dados.filter(d=>mesItem(d)===$('mes').value);[['totalMes',m.length],['totalItj',m.filter(x=>x.local==='ITJ').length],['totalSp',m.filter(x=>x.local==='SP').length],['totalBaixa',m.filter(x=>x.atividade==='BAIXA').length],['totalAjuste',m.filter(x=>x.atividade==='AJUSTE').length],['totalSaida',m.filter(x=>x.atividade==='SAÍDA').length]].forEach(([k,v])=>$(k).textContent=v);const body=$('tbody');body.replaceChildren();const lista=filtrar();lista.forEach(d=>{const tr=document.createElement('tr');if(d.local==='SP')tr.className='linha-sp';[fmtData(d.data),d.hora,d.container,d.atividade,d.operador,d.cliente||'CAMESA',d.solicitante].forEach(v=>cell(tr,v));cell(tr,d.local,d.local==='SP'?'local-sp':'local-itj');const ac=cell(tr,'','no-print-col');if(podeEditar()){const ed=document.createElement('button');ed.className='edit';ed.textContent='Editar';ed.onclick=()=>editar(d.id);const ex=document.createElement('button');ex.className='del';ex.textContent='Excluir';ex.onclick=()=>excluir(d.id);ac.append(ed,' ',ex)}body.append(tr)});for(let i=lista.length;i<20;i++){const tr=document.createElement('tr');for(let j=0;j<9;j++)cell(tr,j===5?'CAMESA':'',j===8?'no-print-col':'');body.append(tr)}}
+function limpar(clear=true){editId=null;$('btnSalvar').textContent='SALVAR MOVIMENTAÇÃO';$('container').value='';if(clear){$('operador').value='IVAIR';$('solicitante').value='ANDERSON'}$('container').focus()}
+async function salvar(){if(!verificar()||!podeEditar())return alert('Acesso somente de consulta.');const obj={data:$('data').value,hora:$('hora').value,container:$('container').value.trim().toUpperCase(),atividade:$('atividade').value,operador:$('operador').value,cliente:'CAMESA',solicitante:$('solicitante').value.trim().toUpperCase(),local:$('local').value,atualizadoEm:new Date().toISOString()};if(!obj.data||!/^([01]\d|2[0-3]):[0-5]\d$/.test(obj.hora)||!obj.container||!obj.operador||!obj.solicitante)return alert('Preencha todos os campos e informe um horário válido.');localStorage.setItem('ultimoOperador',obj.operador);localStorage.setItem('ultimoSolicitante',obj.solicitante);status('Firebase: salvando...');const id=editId;try{if(id){obj.id=String(id);await setDoc(doc(db,COLECAO,obj.id),obj,{merge:true})}else{const ref=await addDoc(collection(db,COLECAO),obj);obj.id=ref.id}dados=unico([...dados,obj]);salvarLocal();pendentes=pendentes.filter(p=>String(p.id)!==String(obj.id));guardarPendentes();limpar(false);render();status('Firebase: salvo','ok')}catch(e){console.error(e);obj.id=id?String(id):'local_'+crypto.randomUUID();dados=unico([...dados,obj]);pendentes=unico([...pendentes,obj]);salvarLocal();guardarPendentes();limpar(false);render();status('Firebase: backup local','erro');alert('Não foi possível salvar no Firebase. A movimentação ficou pendente neste navegador.')}}
+function editar(id){if(!verificar()||!podeEditar())return;const d=dados.find(x=>String(x.id)===String(id));if(!d)return;editId=id;['data','hora','container','atividade','operador','solicitante','local'].forEach(k=>$(k).value=d[k]||'');$('btnSalvar').textContent='SALVAR ALTERAÇÃO';window.scrollTo({top:0,behavior:'smooth'})}
+async function excluir(id,confirmar=true){if(!verificar()||!podeEditar())return;if(confirmar&&!confirm('Excluir esta movimentação?'))return;dados=dados.filter(x=>String(x.id)!==String(id));pendentes=pendentes.filter(x=>String(x.id)!==String(id));deletados=[...new Set([...deletados,String(id)])];salvarLocal();guardarPendentes();render();try{await deleteDoc(doc(db,COLECAO,String(id)));deletados=deletados.filter(x=>String(x)!==String(id));guardarPendentes();status('Firebase: online','ok')}catch(e){console.error(e);status('Firebase: exclusão pendente','erro')}}
+async function excluirMes(){if(!verificar()||!podeEditar())return;const mes=$('mes').value,lista=dados.filter(x=>mesItem(x)===mes);if(!lista.length)return alert('Não existem movimentações neste mês.');if(!confirm(`Excluir ${lista.length} movimentações de ${mes}?`))return;const ids=new Set(lista.map(x=>String(x.id)));dados=dados.filter(x=>!ids.has(String(x.id)));pendentes=pendentes.filter(x=>!ids.has(String(x.id)));deletados=[...new Set([...deletados,...ids])];salvarLocal();guardarPendentes();render();await sincronizar(false);alert('Exclusões processadas. Confira o status do Firebase; falhas permanecem pendentes.')}
+async function sincronizar(aviso=true){if(!verificar()||!podeEditar())return;status('Firebase: sincronizando...');let erros=0,salvos=0,excluidos=0;const restam=[];for(const item of pendentes){try{await setDoc(doc(db,COLECAO,String(item.id)),item);salvos++}catch(e){console.error(e);restam.push(item);erros++}}pendentes=restam;const restamDel=[];for(const id of deletados){try{await deleteDoc(doc(db,COLECAO,String(id)));excluidos++}catch(e){console.error(e);restamDel.push(id);erros++}}deletados=restamDel;guardarPendentes();status(erros?'Firebase: pendências restantes':'Firebase: sincronizado',erros?'erro':'ok');if(aviso)alert(`Sincronização: ${salvos} salvos, ${excluidos} excluídos, ${erros} pendências.`)}
+function exportCSV(){if(!verificar()||!podeEditar())return;const lista=filtrar();if(!lista.length)return alert('Nada para exportar.');const linhas=[['DATA','HORARIO','CONTAINER','ATIVIDADE','OPERADOR','CLIENTE','SOLICITANTE','LOCAL'],...lista.map(d=>[fmtData(d.data),d.hora,d.container,d.atividade,d.operador,d.cliente||'CAMESA',d.solicitante,d.local])];const csv=linhas.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\r\n');const url=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='movimentacoes_containers.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('entrar').onclick=login;$('pass').addEventListener('keydown',e=>{if(e.key==='Enter')login()});$('sair').onclick=sair;$('btnSalvar').onclick=salvar;$('limpar').onclick=()=>limpar();$('mes').onchange=()=>{localStorage.setItem('mesSelecionadoMov',$('mes').value);render()};$('busca').oninput=render;['TODOS','ITJ','SP'].forEach(f=>{$('f'+f).onclick=()=>{filtro=f;['TODOS','ITJ','SP'].forEach(x=>$('f'+x).classList.toggle('active',x===f));render()}});$('imprimir').onclick=()=>{if(verificar())window.print()};$('exportar').onclick=exportCSV;$('sincronizar').onclick=()=>sincronizar();$('excluirMes').onclick=excluirMes;$('hora').addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'').slice(0,4);e.target.value=v.length>2?v.slice(0,2)+':'+v.slice(2):v});if(permitido())abrir();else sair();
+</script></body></html>
